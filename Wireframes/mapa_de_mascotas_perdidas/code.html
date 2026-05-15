@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PataMatch | Mapa de Mascotas Perdidas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#fffbff",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#032104",
+                    "on-primary": "#ffffff",
+                    "on-background": "#1f1b17",
+                    "on-secondary-container": "#4a6b45",
+                    "surface-variant": "#eae1da",
+                    "surface-bright": "#fff8f4",
+                    "secondary-fixed": "#c8edbe",
+                    "inverse-primary": "#ffb59f",
+                    "background": "#fff8f4",
+                    "inverse-surface": "#34302b",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#2f4e2b",
+                    "primary-fixed": "#ffdbd0",
+                    "outline": "#89726b",
+                    "secondary-container": "#c5eabb",
+                    "surface-container-low": "#fbf2eb",
+                    "on-primary-fixed": "#3a0a00",
+                    "primary": "#9c3e20",
+                    "on-tertiary-fixed": "#1e1b15",
+                    "surface-container": "#f5ece5",
+                    "tertiary": "#5f5b54",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#ccc6bc",
+                    "on-tertiary-fixed-variant": "#4a463f",
+                    "on-surface": "#1f1b17",
+                    "primary-fixed-dim": "#ffb59f",
+                    "error": "#ba1a1a",
+                    "surface": "#fff8f4",
+                    "inverse-on-surface": "#f8efe8",
+                    "on-surface-variant": "#56423c",
+                    "surface-dim": "#e1d8d2",
+                    "surface-container-high": "#f0e7df",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#acd0a3",
+                    "surface-container-highest": "#eae1da",
+                    "tertiary-container": "#79746c",
+                    "primary-container": "#bc5636",
+                    "surface-tint": "#9f4122",
+                    "outline-variant": "#ddc0b8",
+                    "on-error": "#ffffff",
+                    "secondary": "#466641",
+                    "on-primary-fixed-variant": "#802a0d",
+                    "on-tertiary-container": "#fffbff",
+                    "tertiary-fixed": "#e8e2d8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "md": "24px",
+                    "lg": "48px",
+                    "sm": "12px",
+                    "base": "8px",
+                    "xl": "80px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "label-lg": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.25", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-lg": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .map-gradient-overlay {
+            background: linear-gradient(to bottom, rgba(255, 248, 244, 0.9) 0%, rgba(255, 248, 244, 0) 20%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #ddc0b8;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<nav class="bg-[#FFFBF7]/80 backdrop-blur-md fixed top-0 w-full z-50 border-b border-stone-200/50 shadow-[0_2px_15px_-3px_rgba(217,108,74,0.08)]">
+<div class="flex justify-between items-center h-20 px-6 md:px-12 max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black text-[#D96C4A] tracking-tighter">PataMatch</span>
+<div class="hidden md:flex gap-6">
+<a class="font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight text-stone-600 hover:text-[#D96C4A] transition-all duration-200" href="#">Adoptar</a>
+<a class="font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight text-[#D96C4A] border-b-2 border-[#D96C4A] pb-1" href="#">Mascotas Perdidas</a>
+<a class="font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight text-stone-600 hover:text-[#D96C4A] transition-all duration-200" href="#">Comunidad</a>
+<a class="font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight text-stone-600 hover:text-[#D96C4A] transition-all duration-200" href="#">Historias</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="font-['Plus_Jakarta_Sans'] text-sm font-semibold text-stone-600 hover:text-[#D96C4A] transition-all">Iniciar Sesión</button>
+<button class="bg-[#D96C4A] text-white px-6 py-2.5 rounded-lg font-['Plus_Jakarta_Sans'] text-sm font-bold shadow-lg shadow-orange-200 hover:scale-[0.98] transition-transform">Registrarse</button>
+</div>
+</div>
+</nav>
+<main class="pt-20 h-screen flex flex-col md:flex-row overflow-hidden">
+<aside class="w-full md:w-96 bg-surface-container-low border-r border-outline-variant flex flex-col z-10">
+<div class="p-6 space-y-4 shadow-sm bg-surface">
+<div class="flex justify-between items-center">
+<h1 class="font-headline-md text-on-surface">Reportes Activos</h1>
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-label-sm">24 Encontrados</span>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary-fixed-dim transition-all outline-none text-body-md" placeholder="Buscar por raza o zona..." type="text"/>
+</div>
+<button class="w-full bg-primary text-white py-4 rounded-xl font-label-lg flex items-center justify-center gap-2 shadow-md hover:scale-[0.98] active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-weight="fill">add_circle</span>
+                    Reportar Mascota Perdida
+                </button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+<div class="bg-surface rounded-2xl p-3 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex gap-4">
+<img class="w-24 h-24 rounded-xl object-cover" data-alt="Un retrato de primer plano de un amigable golden retriever con grandes ojos marrones, sentado en una acera suburbana soleada." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABclrM0v1AEvpRpDqmx-u2ZPckcu9yR3yGeG1UFaNRbkq3DYo5x5e7y3HD-d6RWK3rK7d-VQvuVtieP_w4R7NShxtPCnTjeAd2mYuWL5RnT3baGp4qVA0SEgf9AmOmVen0hAoD_jdtNjSMfFzaVB4PTR79-weR2CzF_ClAV4PLh0RkbqZ3F2driQSpW4fllRQ5gm9FK03VESR9H9lyTjEo3f19rO5zaxA_BWI7zMM3nCB9J7QpNqM0sJtO5JEHP7lfR7hOmmV3gnzp"/>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-label-lg text-on-surface">Baily</h3>
+<span class="bg-error-container text-error px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Urgente</span>
+</div>
+<p class="text-label-sm text-outline mb-2">Golden Retriever • Macho</p>
+<div class="flex items-center gap-1 text-label-sm text-secondary">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Sunset District, SF</span>
+</div>
+<p class="text-[11px] text-outline mt-2 italic">Visto hace 2 horas</p>
+</div>
+</div>
+</div>
+<div class="bg-surface rounded-2xl p-3 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex gap-4">
+<img class="w-24 h-24 rounded-xl object-cover" data-alt="Una hermosa gata calicó con manchas distintivas de color naranja, negro y blanco." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjIsYJGl-CcYQO5JVbsbY4BSZXsFyG8NKCu1BZc-acDaw6mZuxlu3SNt9esOStBAviRilpsxjWpyVUchhhh7uPtGK1-rw26QNZQqY71IYnGxenA-5Z_qrmxF7xB4bD4kIgYmqPuVtT2-F5q9_QELE-czJ_0AgvLNsk0iNjaW3IqRVGH1fyd4Oj5bhRGRdTSdoKM6YTdgEut7eu-g392ddTkNhbwzZbhaayusVsZRc0zvHegj3M8uBKeAVyI9YA5KLBkC_9sH5P2Qri"/>
+<div class="flex-1">
+<h3 class="font-label-lg text-on-surface">Luna</h3>
+<p class="text-label-sm text-outline mb-2">Gata Calicó • Hembra</p>
+<div class="flex items-center gap-1 text-label-sm text-secondary">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Richmond Park</span>
+</div>
+<p class="text-[11px] text-outline mt-2 italic">Visto ayer</p>
+</div>
+</div>
+</div>
+<div class="bg-surface rounded-2xl p-3 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex gap-4">
+<img class="w-24 h-24 rounded-xl object-cover" data-alt="Un pequeño y esponjoso caniche blanco alerta en un porche moderno." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwonxppq8tKMRP9diz8XzlRMM77AK7bCyTaMnsErQfRAQ9JE971zFP6saXsNIIKlWSFP6EJ_R8jW66t-8IQke_WoBFhgbs7M8sW1Mip1mmMS8SQpAut8nqXQ-2l8Unz96IFrtbj538WXB8wegbSthV7kaxNuBbmMza55JoxQieKInvV_P0YHudpHaKU2K56FZUT8aE82DTxxAewO0AyIQB2DjfSEhThBbLPkqw9l057VvP-49RoJC1tF2nq0JEGyj8gKkQw1wOIWTM"/>
+<div class="flex-1">
+<h3 class="font-label-lg text-on-surface">Charlie</h3>
+<p class="text-label-sm text-outline mb-2">Caniche Mini • Macho</p>
+<div class="flex items-center gap-1 text-label-sm text-secondary">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Hayes Valley</span>
+</div>
+<p class="text-[11px] text-outline mt-2 italic">Visto hace 5 horas</p>
+</div>
+</div>
+</div>
+<div class="bg-surface rounded-2xl p-3 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex gap-4">
+<img class="w-24 h-24 rounded-xl object-cover" data-alt="Un hermoso beagle con marcas clásicas tricolores, de pie en un prado durante la hora dorada." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8qJrzdavbG0pGTIutG3pdfw1nylL3lGkpsKdShql2Py98R1rUrr5pieyFotRGARBb9FVAKq9d0UbLWbDBRU4lcdBqfTrrj8ao_c9SqW2vP9MGu-hr-GLQUzK9GIaCTb6fK1LZrtNrUMcEBAr31a5431TB9lUlFr6QsEfmoBfWwVirM_o8p33HRtYvGjAJqHv_F45G3YYC5JhTNqEwSx79BztAyuFly2Bw7SSV9p76lFZosiWGBci0djEp82jVfqL1RhuzakEkKhWU"/>
+<div class="flex-1">
+<h3 class="font-label-lg text-on-surface">Oliver</h3>
+<p class="text-label-sm text-outline mb-2">Beagle • Macho</p>
+<div class="flex items-center gap-1 text-label-sm text-secondary">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Noe Valley</span>
+</div>
+<p class="text-[11px] text-outline mt-2 italic">Visto hace 12 horas</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<section class="flex-1 relative bg-surface-container-highest overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Un mapa estilizado de un distrito urbano moderno con marcadores naranjas de mascotas perdidas." data-location="San Francisco" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCdtTVKAyb9epe-gxFxHwlQpZWEkN-KGyf23XH88weLiEg04Bk6hefdkxTrfqlYShxx0raFACHPSsuxtK9x8gcU1-q55zi-m24-KhpAZMNaFkXJUVFuUEhcKlm4PrIRxFK9TB6FEDYJ4_Hcx3F_pOz8aILnrrIMclxSvBJp6BuoejRNFUuJ796kRO5ziG5U1Mn_ATldNqDHmsECp68_u9tu9y5XoKrMnCSbu8GyvhD9yJvbKoHgCfVu0UTfc6W5MdclPufLj6QPf3N0')">
+</div>
+<div class="absolute inset-0 map-gradient-overlay pointer-events-none"></div>
+<div class="absolute top-6 left-1/2 -translate-x-1/2 flex gap-2">
+<div class="bg-surface/90 backdrop-blur-md px-4 py-2 rounded-full border border-outline-variant shadow-lg flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary animate-pulse"></span>
+<span class="text-label-sm text-on-surface">Actualizaciones en vivo: 3 nuevos reportes cerca de ti</span>
+</div>
+</div>
+<div class="absolute top-[30%] left-[40%] group cursor-pointer">
+<div class="relative">
+<div class="w-12 h-12 rounded-full border-4 border-white shadow-xl overflow-hidden bg-primary-container ring-4 ring-primary/20">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVSBg-0VtLV-8_NqhcttgfYlMVlGLRDIvgGAOFQ0a5nUvg7FZyRL7rOxZBKVOV-2bWviVJGott1qxqPkRC_3IB6TQjqsquHNGuWjwzn4bp0YoRPA8_j191QNNHC4JQmcePxIfiXwRmoI97fFXAwvOMrFuZe4wFIOVpT3iu05JydVHLhm4uRi0xo5J_6qhU5nYPU5DIIG_obQxSUFrL8HU5uoqNiodOdH-RGifD0AJmlIZvOmgla5_CcOyfaEt7q3C_NFJXL-JzcZR1"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white p-1 rounded-full border-2 border-white">
+<span class="material-symbols-outlined text-[12px]" data-weight="fill">pets</span>
+</div>
+</div>
+<div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity bg-surface px-3 py-1 rounded-lg shadow-xl whitespace-nowrap border border-outline-variant">
+<p class="font-label-lg">Baily • Golden Retriever</p>
+</div>
+</div>
+<div class="absolute top-[55%] left-[65%] group cursor-pointer">
+<div class="relative">
+<div class="w-10 h-10 rounded-full border-4 border-white shadow-lg overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADQl-viIHOCIwZevFt3Vj3rIypfkBWjVLS530HSmfjJoLmPd4UGHM3WkwmUwXtkT-lUKEDXSjjfplwcLpjAbKpR1R4ZjB8eg5hKOVslp9EFV7LyjQhIjL3WukH0aCPNh0V0NiiRuW41yr3IpkJneo5kRRMLED3979JqcuI_92hrALU4mYYWknUnsxiFekxEFnS3vlVCTBBMmOoOYnPHd0q3V1ykRIlE84zqujccGUhImuMJB14blGQJoOK4-moZ3_2p1lvOTkb8t3s"/>
+</div>
+</div>
+</div>
+<div class="absolute bottom-10 right-10 flex flex-col gap-2">
+<button class="w-12 h-12 bg-surface border border-outline-variant rounded-full shadow-lg flex items-center justify-center hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface">my_location</span>
+</button>
+<div class="flex flex-col bg-surface border border-outline-variant rounded-2xl shadow-lg divide-y divide-outline-variant">
+<button class="w-12 h-12 flex items-center justify-center hover:bg-surface-container-low transition-colors rounded-t-2xl">
+<span class="material-symbols-outlined text-on-surface">add</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center hover:bg-surface-container-low transition-colors rounded-b-2xl">
+<span class="material-symbols-outlined text-on-surface">remove</span>
+</button>
+</div>
+</div>
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 md:hidden">
+<button class="bg-primary text-white px-8 py-4 rounded-full font-label-lg shadow-2xl flex items-center gap-2 animate-bounce">
+<span class="material-symbols-outlined">report_gmailerrorred</span>
+                    Reportar Mascota Perdida
+                </button>
+</div>
+</section>
+</main>
+<footer class="hidden md:block bg-stone-50 border-t border-stone-200">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-6 md:px-12 max-w-7xl mx-auto py-12">
+<div>
+<p class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500 mb-2">PataMatch</p>
+<p class="text-stone-500 text-sm">© 2024 PataMatch. Conectando corazones, huella a huella.</p>
+</div>
+<div class="flex justify-end gap-8">
+<a class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500 hover:text-[#D96C4A] transition-colors" href="#">Sobre Nosotros</a>
+<a class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500 hover:text-[#D96C4A] transition-colors" href="#">Privacidad</a>
+<a class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500 hover:text-[#D96C4A] transition-colors" href="#">Consejos de Seguridad</a>
+<a class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500 hover:text-[#D96C4A] transition-colors" href="#">Contacto</a>
+</div>
+</div>
+</footer>
+</body></html>

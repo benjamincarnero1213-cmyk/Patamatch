@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PataMatch - Identificación Digital de Mascotas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#fffbff",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#032104",
+                    "on-primary": "#ffffff",
+                    "on-background": "#1f1b17",
+                    "on-secondary-container": "#4a6b45",
+                    "surface-variant": "#eae1da",
+                    "surface-bright": "#fff8f4",
+                    "secondary-fixed": "#c8edbe",
+                    "inverse-primary": "#ffb59f",
+                    "background": "#fff8f4",
+                    "inverse-surface": "#34302b",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#2f4e2b",
+                    "primary-fixed": "#ffdbd0",
+                    "outline": "#89726b",
+                    "secondary-container": "#c5eabb",
+                    "surface-container-low": "#fbf2eb",
+                    "on-primary-fixed": "#3a0a00",
+                    "primary": "#9c3e20",
+                    "on-tertiary-fixed": "#1e1b15",
+                    "surface-container": "#f5ece5",
+                    "tertiary": "#5f5b54",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#ccc6bc",
+                    "on-tertiary-fixed-variant": "#4a463f",
+                    "on-surface": "#1f1b17",
+                    "primary-fixed-dim": "#ffb59f",
+                    "error": "#ba1a1a",
+                    "surface": "#fff8f4",
+                    "inverse-on-surface": "#f8efe8",
+                    "on-surface-variant": "#56423c",
+                    "surface-dim": "#e1d8d2",
+                    "surface-container-high": "#f0e7df",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#acd0a3",
+                    "surface-container-highest": "#eae1da",
+                    "tertiary-container": "#79746c",
+                    "primary-container": "#bc5636",
+                    "surface-tint": "#9f4122",
+                    "outline-variant": "#ddc0b8",
+                    "on-error": "#ffffff",
+                    "secondary": "#466641",
+                    "on-primary-fixed-variant": "#802a0d",
+                    "on-tertiary-container": "#fffbff",
+                    "tertiary-fixed": "#e8e2d8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "md": "24px",
+                    "lg": "48px",
+                    "sm": "12px",
+                    "base": "8px",
+                    "xl": "80px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "label-lg": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.25", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-lg": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .id-card-shadow {
+            box-shadow: 0 10px 40px -10px rgba(156, 62, 32, 0.12);
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 border-b border-stone-200/50 bg-[#FFFBF7]/80 backdrop-blur-md shadow-[0_2px_15px_-3px_rgba(217,108,74,0.08)]">
+<div class="flex justify-between items-center h-20 px-6 md:px-12 max-w-7xl mx-auto">
+<div class="text-2xl font-black text-[#D96C4A] tracking-tighter">PataMatch</div>
+<div class="hidden md:flex items-center gap-8 font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight">
+<a class="text-stone-600 hover:text-[#D96C4A] transition-all duration-200" href="#">Adoptar</a>
+<a class="text-stone-600 hover:text-[#D96C4A] transition-all duration-200" href="#">Mascotas Perdidas</a>
+<a class="text-stone-600 hover:text-[#D96C4A] transition-all duration-200" href="#">Comunidad</a>
+<a class="text-stone-600 hover:text-[#D96C4A] transition-all duration-200" href="#">Historias</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2.5 rounded-lg font-['Plus_Jakarta_Sans'] text-sm font-semibold text-[#D96C4A] hover:bg-orange-50 transition-all duration-200">Iniciar Sesión</button>
+<button class="px-6 py-2.5 rounded-lg font-['Plus_Jakarta_Sans'] text-sm font-semibold bg-[#D96C4A] text-white hover:scale-[0.98] transition-transform duration-150">Registrarse</button>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-6 max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="mb-12 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="inline-block py-1 px-3 rounded-full bg-secondary-container text-on-secondary-fixed-variant font-label-sm text-label-sm uppercase mb-4 tracking-wider">Identificación Digital Oficial</span>
+<h1 class="font-headline-xl text-headline-xl text-on-background">Pasaporte Digital de Oliver</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Siempre disponible, actualizado en tiempo real para su seguridad y cuidado.</p>
+</div>
+<div class="flex gap-3 justify-center">
+<button class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface hover:bg-surface-container transition-colors font-label-lg text-label-lg">
+<span class="material-symbols-outlined">download</span>
+                    Descargar PDF
+                </button>
+<button class="flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary hover:opacity-90 transition-all active:scale-[0.98] font-label-lg text-label-lg shadow-lg">
+<span class="material-symbols-outlined">share</span>
+                    Compartir ID
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Bento Grid Left: The ID Card -->
+<div class="lg:col-span-8 flex flex-col gap-8">
+<!-- Main ID Card -->
+<div class="bg-surface-container-lowest rounded-[2rem] overflow-hidden id-card-shadow border border-surface-container flex flex-col md:flex-row min-h-[480px]">
+<!-- Image Panel -->
+<div class="md:w-2/5 relative">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a charming Beagle puppy sitting proudly on a soft beige background. The lighting is warm and cinematic, highlighting the dog's expressive brown eyes and smooth tri-color coat. The overall aesthetic is clean, modern, and high-end, perfectly aligned with a premium digital pet ID service. The mood is sophisticated yet heartwarming." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmLmgAVgL3cm5dZ0_L2trVGkeijajasPVvrKZCNVZZ9j4G7yqQItG5hwAMfJ81z38MIJn6sIaG7l9vtUNmZtezPmOSgbmhfgJPWbuiMhlG5xA8dYno4ZJLYb4D7i4noHp06ZJz8Gcir0mfBjOqoknRJjIv90iffNuRaJrAYelAIxRahW1Z1Hug3MbZWhkHdNaSN2Q8FoIY3W5UyPnXelfg_LlPYZxW7MitHIgXhbwduaS_jZQcfQRLlSwz0lj4DEepOhRGsDeyGlXw"/>
+<div class="absolute top-4 left-4">
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-secondary font-label-sm text-label-sm shadow-sm">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                                Esterilizado
+                            </div>
+</div>
+<div class="absolute bottom-4 right-4 md:hidden">
+<div class="w-16 h-16 bg-white p-2 rounded-xl shadow-lg border border-surface-container">
+<img alt="Código QR" class="w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANlKPaZg0f5NShpPh2IiKPNlSrDCeDHI-wlREpt1OZE3IMU6ztcB6K84ImSAoewRoXF142RzDa7aJh-AbjhNJ5aoW4Q5HQaIX9Pz5gvzRw8AqwvyefzQSgsAw8tUVNDYdY1t9mDPKUIoeF06CK6VC3HRtD0yfcUpyhG1JqWD7hTGzT7lnEzPiWJmMXkeR449uCYF1Z3L160JL3jJBFBdyjl2iSm2qIgiu3pV9MBbF9xXTZu7c28hUfbpTfSWS-m8mfH6jM-UtaVNB3"/>
+</div>
+</div>
+</div>
+<!-- Info Panel -->
+<div class="md:w-3/5 p-8 md:p-12 flex flex-col">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-1">Oliver</h2>
+<p class="text-on-surface-variant font-label-lg text-label-lg">Beagle • Macho</p>
+</div>
+<div class="hidden md:block">
+<div class="w-20 h-20 bg-white p-2.5 rounded-2xl shadow-sm border border-surface-container">
+<img alt="Código QR" class="w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYvp75MUKmbe5cJeib-gnYMmhe4NsUqfI5OH1UOBlWYPG1so15L4BvuFFdO8ySX11yQ9e30SbJ-Nw1IPpPR-URFjv76SdAYCQfzqVnH1urmo_qK41PFthYWMDFJn4AgsT8KomTT6l8uAi7J8th7dzsEYMngZWEEf_tn-mzOKJNE_DGwHMm6_2t8bhbkd6tuTu7XPBf-Vj5TmQy7aQs7EXRDqf_PepdN5aWvrB2uHbvLxKo8ey0LbRMgrITdP77OJgIB7mmuCACsnI2"/>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-8 gap-x-4 mb-12">
+<div>
+<label class="block text-outline font-label-sm text-label-sm uppercase tracking-widest mb-1">Fecha de Nacimiento</label>
+<p class="font-headline-md text-headline-md">12 Oct, 2021</p>
+<p class="text-on-surface-variant text-sm">2 años 4 meses</p>
+</div>
+<div>
+<label class="block text-outline font-label-sm text-label-sm uppercase tracking-widest mb-1">Color / Marcas</label>
+<p class="font-headline-md text-headline-md">Tricolor</p>
+<p class="text-on-surface-variant text-sm">Blanco, Marrón, Negro</p>
+</div>
+<div class="col-span-2">
+<label class="block text-outline font-label-sm text-label-sm uppercase tracking-widest mb-1">ID de Microchip</label>
+<div class="flex items-center gap-3">
+<p class="font-headline-md text-headline-md font-mono tracking-tight">9851 1234 5678 901</p>
+<span class="material-symbols-outlined text-secondary text-[20px]">verified_user</span>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-8 border-t border-surface-container flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">pets</span>
+</div>
+<div>
+<p class="text-xs text-outline uppercase font-bold tracking-tighter">Especie</p>
+<p class="font-bold text-on-surface">Canino (Perro)</p>
+</div>
+</div>
+<div class="bg-secondary-fixed px-4 py-2 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-on-secondary-fixed-variant text-xs font-bold uppercase tracking-wider">Salud Certificada</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Vaccination Table Section -->
+<div class="bg-surface-container-low rounded-3xl p-8 border border-surface-container">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">vaccines</span>
+<h3 class="font-headline-md text-headline-md">Registro de Vacunación</h3>
+</div>
+<div class="flex gap-4 text-xs font-bold uppercase">
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-green-500"></span> Al día</div>
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-yellow-400"></span> Por vencer</div>
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-500"></span> Vencida</div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-outline-variant">
+<th class="py-4 font-label-lg text-label-lg text-outline">VACUNA</th>
+<th class="py-4 font-label-lg text-label-lg text-outline">ÚLTIMA DOSIS</th>
+<th class="py-4 font-label-lg text-label-lg text-outline">PRÓXIMA DOSIS</th>
+<th class="py-4 font-label-lg text-label-lg text-outline">ESTADO</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr>
+<td class="py-6 font-bold text-on-surface">Rabia 3 Años</td>
+<td class="py-6 text-on-surface-variant">15 Nov, 2022</td>
+<td class="py-6 text-on-surface-variant">15 Nov, 2025</td>
+<td class="py-6"><span class="px-3 py-1.5 rounded-lg bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">Actualizada</span></td>
+</tr>
+<tr>
+<td class="py-6 font-bold text-on-surface">DHPP (Distémper)</td>
+<td class="py-6 text-on-surface-variant">10 Ene, 2024</td>
+<td class="py-6 text-on-surface-variant">10 Ene, 2025</td>
+<td class="py-6"><span class="px-3 py-1.5 rounded-lg bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">Actualizada</span></td>
+</tr>
+<tr>
+<td class="py-6 font-bold text-on-surface">Bordetella</td>
+<td class="py-6 text-on-surface-variant">20 Jul, 2023</td>
+<td class="py-6 text-on-surface-variant font-bold text-yellow-600">15 May, 2024</td>
+<td class="py-6"><span class="px-3 py-1.5 rounded-lg bg-yellow-100 text-yellow-700 text-xs font-bold uppercase tracking-wide">Vence pronto</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Bento Grid Right: Sidebar Context -->
+<div class="lg:col-span-4 flex flex-col gap-8">
+<!-- Primary Vet Card -->
+<div class="bg-white rounded-3xl p-8 border border-surface-container-high shadow-sm">
+<h4 class="font-label-lg text-label-lg text-outline uppercase tracking-widest mb-6">Veterinario Principal</h4>
+<div class="flex gap-4 mb-6">
+<img class="w-16 h-16 rounded-2xl object-cover" data-alt="Close up portrait of a professional female veterinarian with a friendly smile, wearing clinical scrubs and a stethoscope. The background is a clean, modern veterinary clinic with soft, warm lighting. The image conveys trust, expertise, and a gentle demeanor. Colors are muted neutrals with soft primary accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9-8yD0lXLJ4TShMMm1aGrJ6J56X0sIc5-Ey26UnvDv1KGZrR8wCjFhVdedaDppy8txK16_NHXkp2rbSgX0jUE9kZq0gjQBTMJmQRHE-ITE_N59V7kOzDoHbcTx21RRlWB45Oc8qDfV09Jz6cfm15r3bcjIWEQ5xvwYAsuvkMlJKtE5aeAq39egznGh0U5uwPi4ABajLIRLZp3KmyHI6Ktz9g2CqcQGmHJSf3tNDNoUAwWe3qYlmnM4eCwr6MbifWKd9xGIyP359sU"/>
+<div>
+<p class="font-bold text-on-surface text-lg">Dra. Elena Rodriguez</p>
+<p class="text-on-surface-variant text-sm">Clínica Paws &amp; Whiskers</p>
+</div>
+</div>
+<div class="space-y-4">
+<a class="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors" href="tel:+15550123">
+<span class="material-symbols-outlined text-primary">call</span>
+<span class="font-semibold">(555) 0123-4567</span>
+</a>
+<button class="w-full flex items-center justify-center gap-3 p-4 rounded-2xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">map</span>
+                            Ver Direcciones
+                        </button>
+</div>
+</div>
+<!-- Recent Health Notes -->
+<div class="bg-primary text-white rounded-3xl p-8 shadow-xl">
+<div class="flex items-center justify-between mb-6">
+<h4 class="font-label-lg text-label-lg text-primary-fixed uppercase tracking-widest">Historial Médico</h4>
+<span class="material-symbols-outlined">history_edu</span>
+</div>
+<div class="space-y-6">
+<div class="border-l-2 border-primary-fixed/30 pl-4 py-1">
+<p class="text-xs font-bold text-primary-fixed mb-1">10 ENE, 2024</p>
+<p class="font-bold mb-1">Chequeo Anual</p>
+<p class="text-sm text-primary-fixed/80">Peso: 12.4kg. Ritmo cardíaco saludable. Limpieza de oídos.</p>
+</div>
+<div class="border-l-2 border-primary-fixed/30 pl-4 py-1">
+<p class="text-xs font-bold text-primary-fixed mb-1">02 AGO, 2023</p>
+<p class="font-bold mb-1">Limpieza Dental</p>
+<p class="text-sm text-primary-fixed/80">Limpieza profesional bajo sedación. Sin extracciones.</p>
+</div>
+</div>
+<button class="w-full mt-8 py-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all font-label-lg text-label-lg border border-white/20">
+                        Ver Registros Completos
+                    </button>
+</div>
+<!-- Ownership Info -->
+<div class="bg-surface-container-low rounded-3xl p-8 border border-surface-container">
+<h4 class="font-label-lg text-label-lg text-outline uppercase tracking-widest mb-6">Información del Dueño</h4>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-white">person</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Sarah Johnson</p>
+<p class="text-sm text-on-surface-variant">San Francisco, CA</p>
+</div>
+</div>
+<div class="mt-6 p-4 rounded-2xl bg-white border border-surface-container flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">verified</span>
+<p class="text-xs font-medium text-on-surface-variant">Propiedad Verificada mediante el Registro PataMatch</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-16 border-t border-stone-200 bg-stone-50">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-6 md:px-12 max-w-7xl mx-auto">
+<div class="flex flex-col gap-4">
+<div class="text-xl font-bold text-stone-800">PataMatch</div>
+<p class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500">
+                    © 2024 PataMatch. Conectando corazones, una pata a la vez.
+                </p>
+</div>
+<div class="flex flex-wrap md:justify-end gap-x-8 gap-y-4">
+<a class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500 hover:text-[#D96C4A] transition-colors" href="#">Sobre Nosotros</a>
+<a class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500 hover:text-[#D96C4A] transition-colors" href="#">Privacidad</a>
+<a class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500 hover:text-[#D96C4A] transition-colors" href="#">Consejos de Seguridad</a>
+<a class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest font-bold text-stone-500 hover:text-[#D96C4A] transition-colors" href="#">Contacto</a>
+</div>
+</div>
+</footer>
+</body></html>

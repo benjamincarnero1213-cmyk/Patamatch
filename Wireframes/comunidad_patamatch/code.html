@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#9f4122",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#c8edbe",
+                    "on-tertiary-fixed-variant": "#4a463f",
+                    "on-primary": "#ffffff",
+                    "secondary": "#466641",
+                    "on-secondary-fixed-variant": "#2f4e2b",
+                    "on-secondary-container": "#4a6b45",
+                    "surface-container": "#f5ece5",
+                    "surface-dim": "#e1d8d2",
+                    "primary-container": "#bc5636",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#ffdbd0",
+                    "primary-fixed-dim": "#ffb59f",
+                    "tertiary": "#5f5b54",
+                    "secondary-container": "#c5eabb",
+                    "on-surface": "#1f1b17",
+                    "on-background": "#1f1b17",
+                    "surface-container-high": "#f0e7df",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-highest": "#eae1da",
+                    "secondary-fixed-dim": "#acd0a3",
+                    "surface-bright": "#fff8f4",
+                    "on-secondary-fixed": "#032104",
+                    "background": "#fff8f4",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#802a0d",
+                    "tertiary-fixed": "#e8e2d8",
+                    "surface-container-low": "#fbf2eb",
+                    "on-primary-container": "#fffbff",
+                    "inverse-primary": "#ffb59f",
+                    "on-tertiary-container": "#fffbff",
+                    "inverse-on-surface": "#f8efe8",
+                    "surface-variant": "#eae1da",
+                    "on-surface-variant": "#56423c",
+                    "error": "#ba1a1a",
+                    "outline-variant": "#ddc0b8",
+                    "on-primary-fixed": "#3a0a00",
+                    "tertiary-fixed-dim": "#ccc6bc",
+                    "primary": "#9c3e20",
+                    "on-tertiary-fixed": "#1e1b15",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#34302b",
+                    "surface": "#fff8f4",
+                    "tertiary-container": "#79746c",
+                    "outline": "#89726b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "24px",
+                    "sm": "12px",
+                    "xs": "4px",
+                    "lg": "48px",
+                    "gutter": "24px",
+                    "xl": "80px",
+                    "container-max": "1280px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "label-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-lg": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.25", "fontWeight": "700"}],
+                    "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .text-shadow-sm {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-orange-50/80 dark:bg-zinc-950/90 backdrop-blur-md docked full-width top-0 sticky z-50 border-b border-orange-100 dark:border-zinc-800 shadow-sm">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto font-['Plus_Jakarta_Sans'] antialiased">
+<div class="text-2xl font-black text-orange-600 dark:text-orange-400 tracking-tighter">PataMatch</div>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-orange-500 dark:hover:text-orange-300 transition-colors duration-200" href="#">Adoptar</a>
+<a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-orange-500 dark:hover:text-orange-300 transition-colors duration-200" href="#">Perdidos y Encontrados</a>
+<a class="text-orange-600 dark:text-orange-400 font-bold border-b-2 border-orange-600 dark:border-orange-400 pb-1 hover:text-orange-500 dark:hover:text-orange-300 transition-colors duration-200" href="#">Comunidad</a>
+<a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-orange-500 dark:hover:text-orange-300 transition-colors duration-200" href="#">Historias</a>
+</nav>
+<div class="flex items-center space-x-4">
+<div class="hidden lg:block relative">
+<input class="bg-surface-container-low border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary w-64" placeholder="Buscar en la comunidad..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary px-5 py-2 rounded-full text-label-lg font-bold active:scale-95 duration-150 ease-in-out">Crear Publicación</button>
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-zinc-600 cursor-pointer p-2 hover:bg-orange-100 rounded-full transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-zinc-600 cursor-pointer p-2 hover:bg-orange-100 rounded-full transition-colors" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow max-w-7xl w-full mx-auto px-6 py-lg">
+<!-- Community Header Section -->
+<section class="mb-xl text-center md:text-left">
+<h1 class="font-headline-xl text-primary mb-xs">Comunidad</h1>
+<p class="text-body-lg text-tertiary max-w-2xl">Conéctate con miles de dueños de mascotas, comparte consejos y mantente al día con los eventos locales. Este es tu espacio seguro para todo lo relacionado con huellas y bigotes.</p>
+</section>
+<div class="flex flex-col lg:flex-row gap-gutter">
+<!-- Sidebar Navigation -->
+<aside class="w-full lg:w-72 flex-shrink-0 space-y-md">
+<div class="bg-surface-container-low rounded-xl p-md">
+<h3 class="font-label-lg text-on-surface-variant mb-md px-2">CATEGORÍAS</h3>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span>Todas las charlas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-tertiary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="lightbulb">lightbulb</span>
+<span>Consejos Generales</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-tertiary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="health_and_safety">health_and_safety</span>
+<span>Salud y Nutrición</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-tertiary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span>Eventos Locales</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-tertiary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="support">support</span>
+<span>Apoyo en Búsqueda</span>
+</a>
+</nav>
+</div>
+<!-- Featured Community Activity Bento Item -->
+<div class="bg-secondary-container text-on-secondary-container rounded-xl p-md relative overflow-hidden group">
+<div class="relative z-10">
+<h4 class="font-headline-md mb-2">¡Fiesta de Patas!</h4>
+<p class="text-sm mb-4 opacity-90">Únete a nuestra reunión en Golden Gate Park este sábado.</p>
+<button class="bg-on-secondary-container text-white px-4 py-2 rounded-lg text-label-sm">Ver Evento</button>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl opacity-10 rotate-12 group-hover:scale-110 transition-transform" data-icon="pets">pets</span>
+</div>
+</aside>
+<!-- Main Feed -->
+<div class="flex-grow space-y-md">
+<div class="flex items-center justify-between mb-sm">
+<h2 class="font-headline-md text-on-surface">Charlas en Tendencia</h2>
+<div class="flex gap-2">
+<button class="px-3 py-1 rounded-full border border-outline text-label-sm hover:bg-surface-container-high">Reciente</button>
+<button class="px-3 py-1 rounded-full bg-primary text-on-primary text-label-sm">Popular</button>
+</div>
+</div>
+<!-- Post Card 1 -->
+<article class="bg-white rounded-xl p-md border border-surface-container-high shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-md">
+<div class="flex items-center gap-3">
+<img alt="Sarah Miller" class="w-12 h-12 rounded-full object-cover" data-alt="A professional headshot of a smiling young woman with kind eyes and auburn hair, set against a soft bokeh background of a sunny park. The lighting is warm and natural, emphasizing a friendly and trustworthy community member persona in a modern, light-themed web interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8Wm9pA1lUUib9HuVXuloRZ82CSu3bGco76b7dv6NYk3sqaAMrwG6_FKWvX7xDAeYrgyCdjGpDtY7gAjz8DBN1_PTvqTPL1brMiZEXpb0KIIO36B8Zx7i3ugxJdfZ2fck2t1Iirf0ItDcTFaFzoL5xhBZUDG5BPyl5QwNR0LOIGxJC0YHx2E4aBZG51vdPm-etERXmxttbGwr3LWT7kMq8QNrOczkkxAcaHcFmx-TkJ4HN7lS2zK28A1tvfWlT41ath_LrgFmBKEg-"/>
+<div>
+<h4 class="font-label-lg text-on-surface">Sarah Miller</h4>
+<p class="text-label-sm text-tertiary">Hace 2 horas • <span class="text-secondary font-semibold">Eventos Locales</span></p>
+</div>
+</div>
+<span class="material-symbols-outlined text-tertiary cursor-pointer" data-icon="more_horiz">more_horiz</span>
+</div>
+<h3 class="font-headline-md text-on-surface mb-sm leading-tight">¿Mejores parques en SF con áreas exclusivas para perros pequeños?</h3>
+<p class="text-body-md text-tertiary mb-md line-clamp-2">¡Acabo de mudarme a Nob Hill con mi Yorkie de 2kg! Busco sugerencias de parques donde las secciones para perros pequeños estén bien cuidadas y sean seguras.</p>
+<div class="flex flex-wrap gap-2 mb-md">
+<span class="bg-secondary-container/30 text-secondary px-3 py-1 rounded-full text-label-sm">#SanFrancisco</span>
+<span class="bg-secondary-container/30 text-secondary px-3 py-1 rounded-full text-label-sm">#PerrosPequeños</span>
+<span class="bg-secondary-container/30 text-secondary px-3 py-1 rounded-full text-label-sm">#ParquesCaninos</span>
+</div>
+<div class="flex items-center gap-6 border-t border-surface-container-low pt-md">
+<button class="flex items-center gap-1.5 text-label-lg text-tertiary hover:text-primary">
+<span class="material-symbols-outlined" data-icon="thumb_up">thumb_up</span>
+<span>42</span>
+</button>
+<button class="flex items-center gap-1.5 text-label-lg text-tertiary hover:text-primary">
+<span class="material-symbols-outlined" data-icon="chat_bubble_outline">chat_bubble_outline</span>
+<span>18 comentarios</span>
+</button>
+<button class="flex items-center gap-1.5 text-label-lg text-tertiary ml-auto hover:text-primary">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+</div>
+</article>
+<!-- Post Card 2 -->
+<article class="bg-white rounded-xl p-md border border-surface-container-high shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-md">
+<div class="flex items-center gap-3">
+<img alt="David Chen" class="w-12 h-12 rounded-full object-cover" data-alt="A friendly middle-aged man with short black hair and glasses, wearing a casual sweater. He is looking directly at the camera with a warm, helpful expression. The setting is a clean, modern indoor environment with soft, bright light, evoking a sense of community and support." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeG2S1vbkvQlmYX2rRCv1Ojgwa3cbXajbOu3xGfM1rHX-vxBnx65qG2UUfvO6tMRvaVtHrnBsmLkUNoRyUae8qyqfDdr85YeiTCs3sw0RBZAZwIxsIo9znaK07ZJxZTaBLK4_aScTdgBvN1yrNGVGvg6JimgCFoxQeowqTh0kEGNbNdXnyu_B_jg1V2y97Acu8Rbe6mx-c_1o5iAtgI6mc-rK0LeIb_CWKhl8kxPghVlrUAplS2Hyb5cOhu9Vb46aakq1yXTsWfCSW"/>
+<div>
+<h4 class="font-label-lg text-on-surface">David Chen</h4>
+<p class="text-label-sm text-tertiary">Hace 5 horas • <span class="text-secondary font-semibold">Salud y Nutrición</span></p>
+</div>
+</div>
+<span class="material-symbols-outlined text-tertiary cursor-pointer" data-icon="more_horiz">more_horiz</span>
+</div>
+<h3 class="font-headline-md text-on-surface mb-sm leading-tight">Consejos para cachorros: Manejando la ansiedad por separación</h3>
+<p class="text-body-md text-tertiary mb-md line-clamp-2">Mi mezcla de Labrador de 10 semanas empieza a llorar en cuanto salgo de la habitación. ¿Alguna experiencia con jaulas de entrenamiento o juguetes relajantes?</p>
+<div class="flex flex-wrap gap-2 mb-md">
+<span class="bg-secondary-container/30 text-secondary px-3 py-1 rounded-full text-label-sm">#EntrenamientoCachorros</span>
+<span class="bg-secondary-container/30 text-secondary px-3 py-1 rounded-full text-label-sm">#NuevoDueño</span>
+</div>
+<div class="flex items-center gap-6 border-t border-surface-container-low pt-md">
+<button class="flex items-center gap-1.5 text-label-lg text-tertiary hover:text-primary">
+<span class="material-symbols-outlined" data-icon="thumb_up">thumb_up</span>
+<span>128</span>
+</button>
+<button class="flex items-center gap-1.5 text-label-lg text-tertiary hover:text-primary">
+<span class="material-symbols-outlined" data-icon="chat_bubble_outline">chat_bubble_outline</span>
+<span>54 comentarios</span>
+</button>
+<button class="flex items-center gap-1.5 text-label-lg text-tertiary ml-auto hover:text-primary">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+</div>
+</article>
+<!-- Discussion Prompt Card -->
+<div class="bg-surface-container-highest/50 border-2 border-dashed border-outline-variant rounded-xl p-xl flex flex-col items-center text-center">
+<div class="bg-white p-4 rounded-full shadow-sm mb-md">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="add_comment">add_comment</span>
+</div>
+<h3 class="font-headline-md text-on-surface mb-xs">¿Tienes alguna pregunta?</h3>
+<p class="text-tertiary mb-lg max-w-sm">Comparte tus experiencias o pide consejo a nuestra comunidad de expertos y entusiastas de las mascotas.</p>
+<button class="bg-primary text-on-primary px-xl py-md rounded-full font-bold text-label-lg shadow-lg active:scale-95 duration-150">Iniciar una charla</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-zinc-50 dark:bg-zinc-900 full-width mt-auto border-t border-zinc-200 dark:border-zinc-800">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto text-center md:text-left">
+<div class="space-y-4">
+<div class="text-lg font-bold text-zinc-900 dark:text-white">PataMatch</div>
+<p class="font-['Plus_Jakarta_Sans'] text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">© 2024 Comunidad PataMatch. Cada mascota merece un hogar.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+<div class="flex flex-col space-y-2">
+<a class="text-zinc-500 dark:text-zinc-400 font-['Plus_Jakarta_Sans'] text-sm hover:text-orange-600 dark:hover:text-orange-400 transition-colors opacity-80 hover:opacity-100" href="#">Sobre Nosotros</a>
+<a class="text-zinc-500 dark:text-zinc-400 font-['Plus_Jakarta_Sans'] text-sm hover:text-orange-600 dark:hover:text-orange-400 transition-colors opacity-80 hover:opacity-100" href="#">Consejos de Seguridad</a>
+</div>
+<div class="flex flex-col space-y-2">
+<a class="text-zinc-500 dark:text-zinc-400 font-['Plus_Jakarta_Sans'] text-sm hover:text-orange-600 dark:hover:text-orange-400 transition-colors opacity-80 hover:opacity-100" href="#">Casos de Éxito</a>
+<a class="text-zinc-500 dark:text-zinc-400 font-['Plus_Jakarta_Sans'] text-sm hover:text-orange-600 dark:hover:text-orange-400 transition-colors opacity-80 hover:opacity-100" href="#">Reglas de la Comunidad</a>
+</div>
+<div class="flex flex-col space-y-2">
+<a class="text-zinc-500 dark:text-zinc-400 font-['Plus_Jakarta_Sans'] text-sm hover:text-orange-600 dark:hover:text-orange-400 transition-colors opacity-80 hover:opacity-100" href="#">Atención al Cliente</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- FAB for Mobile -->
+<button class="md:hidden fixed bottom-6 right-6 bg-primary text-on-primary w-14 h-14 rounded-full shadow-2xl flex items-center justify-center active:scale-95 transition-transform z-40">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+</body></html>

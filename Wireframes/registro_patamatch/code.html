@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-tint": "#9f4122",
+            "on-primary": "#ffffff",
+            "surface-variant": "#eae1da",
+            "secondary": "#466641",
+            "outline": "#89726b",
+            "primary-fixed": "#ffdbd0",
+            "on-background": "#1f1b17",
+            "inverse-on-surface": "#f8efe8",
+            "on-error-container": "#93000a",
+            "surface": "#fff8f4",
+            "tertiary-fixed": "#e8e2d8",
+            "on-surface": "#1f1b17",
+            "primary": "#9c3e20",
+            "surface-container-high": "#f0e7df",
+            "primary-fixed-dim": "#ffb59f",
+            "on-error": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed": "#032104",
+            "on-tertiary-container": "#fffbff",
+            "error-container": "#ffdad6",
+            "surface-container-highest": "#eae1da",
+            "surface-bright": "#fff8f4",
+            "primary-container": "#bc5636",
+            "error": "#ba1a1a",
+            "background": "#fff8f4",
+            "on-primary-fixed-variant": "#802a0d",
+            "tertiary-container": "#79746c",
+            "on-primary-fixed": "#3a0a00",
+            "tertiary": "#5f5b54",
+            "inverse-surface": "#34302b",
+            "secondary-container": "#c5eabb",
+            "outline-variant": "#ddc0b8",
+            "on-tertiary-fixed": "#1e1b15",
+            "on-secondary-container": "#4a6b45",
+            "on-primary-container": "#fffbff",
+            "inverse-primary": "#ffb59f",
+            "surface-container-low": "#fbf2eb",
+            "surface-container": "#f5ece5",
+            "tertiary-fixed-dim": "#ccc6bc",
+            "secondary-fixed-dim": "#acd0a3",
+            "on-surface-variant": "#56423c",
+            "on-tertiary-fixed-variant": "#4a463f",
+            "surface-dim": "#e1d8d2",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#c8edbe",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#2f4e2b"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "md": "24px",
+            "lg": "48px",
+            "container-max": "1280px",
+            "xs": "4px",
+            "gutter": "24px",
+            "xl": "80px",
+            "sm": "12px",
+            "base": "8px"
+          },
+          "fontFamily": {
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-lg": ["32px", {"lineHeight": "1.25", "fontWeight": "700"}],
+            "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+            "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+            "label-lg": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+            "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+            "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+            "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background-color: #ddc0b8;
+      border-radius: 10px;
+    }
+    .squish-active:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body class="bg-background font-body-md text-on-surface min-h-screen flex flex-col">
+<header class="bg-[#FDF8F5] dark:bg-stone-950 shadow-sm border-b border-orange-100 dark:border-stone-800 sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-bold text-orange-600 dark:text-orange-500 tracking-tight font-['Plus_Jakarta_Sans']">PataMatch</div>
+<div class="hidden md:flex items-center gap-6">
+<a class="font-['Plus_Jakarta_Sans'] text-base font-medium text-stone-600 dark:text-stone-400 hover:text-orange-500 transition-colors duration-200" href="#">Encontrar Mascota</a>
+<a class="font-['Plus_Jakarta_Sans'] text-base font-medium text-stone-600 dark:text-stone-400 hover:text-orange-500 transition-colors duration-200" href="#">Historias de Éxito</a>
+<div class="flex items-center gap-4 border-l border-stone-200 pl-6">
+<span class="material-symbols-outlined text-stone-600 cursor-pointer hover:bg-orange-50 p-2 rounded-full transition-colors">favorite</span>
+<span class="material-symbols-outlined text-stone-600 cursor-pointer hover:bg-orange-50 p-2 rounded-full transition-colors">notifications</span>
+<span class="material-symbols-outlined text-stone-600 cursor-pointer hover:bg-orange-50 p-2 rounded-full transition-colors">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow flex items-stretch">
+<div class="hidden lg:block lg:w-1/2 relative overflow-hidden">
+<div class="absolute inset-0 bg-primary opacity-10 mix-blend-multiply z-10"></div>
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A heartwarming, high-quality photograph of a happy golden retriever and a calico cat sitting side-by-side in a sun-drenched, modern living room. The lighting is soft and golden, highlighting the texture of their fur and creating a welcoming, safe atmosphere. The color palette features warm terracotta tones, soft beiges, and gentle greens, perfectly aligned with the Soft Modernism brand identity. The composition is clean and airy, evoking feelings of hope and community." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLAWwbh2dJqSbgMgyaN5rFfW_6-bV1ea_HuGUxb81ZgWgeQEISoCGRRbWA7PDSVJbTDtKQAp61EYoUJ3arOsaClVsN3ngM_Fx-ymhpEhJDAyllDFNCf6Ehu60ev1lIqfCqKdEH401V-glzTnHHRloTifD05r2xgxDsXw3VHcsIH2ovGTFcJ5MA7t_Y0FnC-QmFJtmArw7TcdgwbN7dI_Vae2S7OSwnZK6cqtsqKxUhus2ZTOVoyT82oUi92IUcRlikzwNfqB8wDco8"/>
+<div class="absolute inset-0 flex flex-col justify-end p-xl z-20 bg-gradient-to-t from-black/60 to-transparent">
+<div class="max-w-md">
+<h1 class="font-headline-xl text-white mb-md">Únete a la comunidad de PataMatch</h1>
+<p class="font-body-lg text-white/90">Miles de mascotas esperan un hogar lleno de amor. Tu nueva mejor compañía está a solo unos clics de distancia.</p>
+</div>
+</div>
+</div>
+<div class="w-full lg:w-1/2 flex items-center justify-center p-md md:p-lg lg:p-xl bg-surface-container-low">
+<div class="w-full max-w-md bg-white rounded-xl shadow-sm p-lg border border-surface-variant">
+<div class="mb-lg">
+<h2 class="font-headline-lg text-primary mb-xs">Bienvenido</h2>
+<p class="font-body-md text-on-surface-variant">Completa tus datos para crear una cuenta.</p>
+</div>
+<form class="space-y-md">
+<div class="space-y-xs">
+<label class="font-label-lg text-on-surface-variant block ml-xs">Nombre Completo</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-outline">person</span>
+<input class="w-full pl-12 pr-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-0 outline-none transition-all bg-surface-bright placeholder:text-outline" placeholder="Ej. Juan Pérez" type="text"/>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-lg text-on-surface-variant block ml-xs">Correo Electrónico</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-outline">mail</span>
+<input class="w-full pl-12 pr-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-0 outline-none transition-all bg-surface-bright placeholder:text-outline" placeholder="tu@email.com" type="email"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="space-y-xs">
+<label class="font-label-lg text-on-surface-variant block ml-xs">Contraseña</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-outline">lock</span>
+<input class="w-full pl-12 pr-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-0 outline-none transition-all bg-surface-bright placeholder:text-outline" placeholder="********" type="password"/>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-lg text-on-surface-variant block ml-xs">Ciudad</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-outline">location_on</span>
+<input class="w-full pl-12 pr-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-0 outline-none transition-all bg-surface-bright placeholder:text-outline" placeholder="Ciudad" type="text"/>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-sm pt-xs">
+<input class="mt-1 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-0" id="terms" type="checkbox"/>
+<label class="font-label-sm text-on-surface-variant" for="terms">
+              Acepto los <a class="text-primary font-semibold hover:underline" href="#">términos y condiciones</a> y la política de privacidad de PataMatch.
+            </label>
+</div>
+<button class="squish-active w-full bg-primary hover:bg-surface-tint text-on-primary font-label-lg py-4 rounded-lg shadow-md transition-all flex justify-center items-center gap-sm" type="submit">
+            Crear Cuenta
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pets</span>
+</button>
+</form>
+<div class="mt-lg pt-md border-t border-outline-variant text-center">
+<p class="font-body-md text-on-surface-variant">
+            ¿Ya tienes una cuenta? 
+            <a class="text-primary font-bold hover:underline ml-xs" href="#">Inicia Sesión</a>
+</p>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-stone-100 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 w-full py-12">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 w-full max-w-7xl mx-auto space-y-4 md:space-y-0">
+<div class="flex flex-col items-center md:items-start gap-2">
+<div class="text-lg font-bold text-orange-600">PataMatch</div>
+<p class="font-['Plus_Jakarta_Sans'] text-sm text-stone-600 dark:text-stone-400">© 2024 PataMatch. Built with love for every paw.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-['Plus_Jakarta_Sans'] text-sm text-stone-500 hover:text-orange-500 hover:underline transition-all" href="#">Encontrar Mascota</a>
+<a class="font-['Plus_Jakarta_Sans'] text-sm text-stone-500 hover:text-orange-500 hover:underline transition-all" href="#">Historias de Éxito</a>
+<a class="font-['Plus_Jakarta_Sans'] text-sm text-stone-500 hover:text-orange-500 hover:underline transition-all" href="#">Sobre Nosotros</a>
+<a class="font-['Plus_Jakarta_Sans'] text-sm text-stone-500 hover:text-orange-500 hover:underline transition-all" href="#">Política de Privacidad</a>
+</div>
+</div>
+</footer>
+</body></html>
