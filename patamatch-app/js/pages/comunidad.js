@@ -1,4 +1,4 @@
-import * as api from '../api.js';
+import * as api from '../api.js?v=3';;
 
 function buildPostCard(post) {
   // post data from API: id, author_name, category, title, body, created_at, like_count, comment_count, is_liked

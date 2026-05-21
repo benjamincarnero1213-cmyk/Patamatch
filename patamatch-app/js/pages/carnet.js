@@ -1,4 +1,4 @@
-import * as api from '../api.js';
+import * as api from '../api.js?v=3';;
 
 function buildCarnetHTML(carnet) {
   const vaxHTML = carnet.vaccinations.map(v => {

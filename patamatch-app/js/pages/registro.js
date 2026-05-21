@@ -1,4 +1,4 @@
-import * as api from '../api.js';
+import * as api from '../api.js?v=3';;
 
 export function render() {
   // Register is a full-page layout — signal the router to hide nav/footer

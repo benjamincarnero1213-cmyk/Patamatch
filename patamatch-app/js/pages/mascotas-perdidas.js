@@ -1,4 +1,4 @@
-import * as api from '../api.js';
+import * as api from '../api.js?v=3';;
 
 function buildSidebarCard(pet) {
   const badgeHtml = pet.badge
@@ -25,7 +25,7 @@ function buildSidebarCard(pet) {
     </div>`;
 }
 
-function buildMarker(pet) {
+function buildMarkerHtml(pet) {
   const size = pet.badge === 'Urgente' ? 'w-12 h-12' : 'w-10 h-10';
   const ringClass = pet.badge === 'Urgente' ? 'bg-primary-container ring-4 ring-primary/20' : 'bg-surface-variant';
   const petIconHtml = pet.badge === 'Urgente'
@@ -38,14 +38,14 @@ function buildMarker(pet) {
   const markerLabel = `${pet.name} • ${pet.breed}`;
 
   return `
-    <div class="map-marker absolute group cursor-pointer" data-marker-id="${pet.id}" style="top: ${pet.marker_top || '50%'}; left: ${pet.marker_left || '50%'};">
+    <div class="map-marker group cursor-pointer relative" data-marker-id="${pet.id}">
       <div class="relative">
         <div class="${size} rounded-full border-4 border-white shadow-xl overflow-hidden ${ringClass}">
           <img class="w-full h-full object-cover" src="${markerImg}" alt="${pet.name}" />
         </div>
         ${petIconHtml}
       </div>
-      <div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity bg-surface px-3 py-1 rounded-lg shadow-xl whitespace-nowrap border border-outline-variant">
+      <div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity bg-surface px-3 py-1 rounded-lg shadow-xl whitespace-nowrap border border-outline-variant z-50">
         <p class="font-label-lg">${markerLabel}</p>
       </div>
     </div>`;
@@ -74,7 +74,12 @@ export function render() {
       </div>
       <div>
         <label class="block font-label-sm text-on-surface-variant mb-1">Última ubicación conocida</label>
-        <input id="report-location" class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary transition-all" type="text" placeholder="Ej: Parque Central, Zona 10" required />
+        <div class="flex gap-2">
+          <input id="report-location" class="flex-1 px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary transition-all" type="text" placeholder="Ej: Parque Central, Zona 10" required />
+          <button id="select-map-btn" class="bg-surface-variant text-on-surface p-3 rounded-xl hover:bg-surface-container-low transition-colors border border-outline-variant flex items-center justify-center" title="Seleccionar en el mapa">
+            <span class="material-symbols-outlined">map</span>
+          </button>
+        </div>
       </div>
       <div>
         <label class="block font-label-sm text-on-surface-variant mb-1">URL de Imagen</label>
@@ -134,32 +139,22 @@ export function render() {
 
   <!-- Map Section -->
   <section class="flex-1 relative bg-surface-container-highest overflow-hidden">
-    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCdtTVKAyb9epe-gxFxHwlQpZWEkN-KGyf23XH88weLiEg04Bk6hefdkxTrfqlYShxx0raFACHPSsuxtK9x8gcU1-q55zi-m24-KhpAZMNaFkXJUVFuUEhcKlm4PrIRxFK9TB6FEDYJ4_Hcx3F_pOz8aILnrrIMclxSvBJp6BuoejRNFUuJ796kRO5ziG5U1Mn_ATldNqDHmsECp68_u9tu9y5XoKrMnCSbu8GyvhD9yJvbKoHgCfVu0UTfc6W5MdclPufLj6QPf3N0')"></div>
-    <div class="absolute inset-0 map-gradient-overlay pointer-events-none"></div>
+    <!-- Leaflet map container -->
+    <div id="leaflet-map-container" class="absolute inset-0 z-0"></div>
+    <div class="absolute inset-0 map-gradient-overlay pointer-events-none z-10"></div>
 
     <!-- Live update banner -->
-    <div class="absolute top-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+    <div class="absolute top-6 left-1/2 -translate-x-1/2 flex gap-2 z-20 pointer-events-none">
       <div class="bg-surface/90 backdrop-blur-md px-4 py-2 rounded-full border border-outline-variant shadow-lg flex items-center gap-2">
         <span class="w-3 h-3 rounded-full bg-primary animate-pulse"></span>
         <span id="live-update-text" class="text-label-sm text-on-surface">Actualizaciones en vivo...</span>
       </div>
     </div>
 
-    <!-- Pet markers container -->
-    <div id="map-markers-container" class="absolute inset-0 pointer-events-auto"></div>
-
-    <!-- Zoom controls -->
-    <div class="absolute bottom-10 right-10 flex flex-col gap-2 z-20">
-      <button id="map-locate" class="w-12 h-12 bg-surface border border-outline-variant rounded-full shadow-lg flex items-center justify-center hover:bg-surface-container-low transition-colors">
-        <span class="material-symbols-outlined text-on-surface">my_location</span>
-      </button>
-      <div class="flex flex-col bg-surface border border-outline-variant rounded-2xl shadow-lg divide-y divide-outline-variant">
-        <button id="map-zoom-in" class="w-12 h-12 flex items-center justify-center hover:bg-surface-container-low transition-colors rounded-t-2xl">
-          <span class="material-symbols-outlined text-on-surface">add</span>
-        </button>
-        <button id="map-zoom-out" class="w-12 h-12 flex items-center justify-center hover:bg-surface-container-low transition-colors rounded-b-2xl">
-          <span class="material-symbols-outlined text-on-surface">remove</span>
-        </button>
+    <!-- Instructions banner -->
+    <div id="map-instructions" class="hidden absolute top-20 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+      <div class="bg-primary text-white px-6 py-3 rounded-full shadow-lg font-label-lg flex items-center gap-2">
+        <span class="material-symbols-outlined">touch_app</span> Haz clic en el mapa para ubicar a la mascota
       </div>
     </div>
 
@@ -177,9 +172,43 @@ export function render() {
 
 export async function init() {
   const petList = document.getElementById('lost-pet-list');
-  const markersContainer = document.getElementById('map-markers-container');
   const badge = document.getElementById('active-reports-badge');
   const updateText = document.getElementById('live-update-text');
+  const mapInstructions = document.getElementById('map-instructions');
+
+  // Dynamically load Leaflet if it's not present (e.g. if the user didn't refresh the SPA)
+  if (!window.L) {
+    await new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.onload = resolve;
+      document.head.appendChild(script);
+    });
+  }
+
+  let leafletMap = null;
+  let leafletMarkers = {};
+  let tempMarker = null;
+  let selectedLat = null;
+  let selectedLng = null;
+  let activeId = null;
+
+  // Initialize Leaflet Map
+  leafletMap = L.map('leaflet-map-container', { zoomControl: false }).setView([19.4326, -99.1332], 13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+  }).addTo(leafletMap);
+  L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
+
+  // Fix for SPA: invalidate size after the container has been rendered to the screen
+  setTimeout(() => {
+    leafletMap.invalidateSize();
+  }, 100);
 
   async function loadLostPets() {
     try {
@@ -190,7 +219,31 @@ export async function init() {
         updateText.textContent = `${pets.length} reportes activos en tu zona`;
         
         petList.innerHTML = pets.map(p => buildSidebarCard(p)).join('');
-        markersContainer.innerHTML = pets.map(p => buildMarker(p)).join('');
+        
+        // Clear existing markers
+        Object.values(leafletMarkers).forEach(m => leafletMap.removeLayer(m));
+        leafletMarkers = {};
+
+        pets.forEach(pet => {
+          let lat = parseFloat(pet.marker_top);
+          let lng = parseFloat(pet.marker_left);
+          if (isNaN(lat) || isNaN(lng)) {
+            // fallback to random spot near center if DB has old % values
+            lat = 19.4326 + (Math.random() - 0.5) * 0.05;
+            lng = -99.1332 + (Math.random() - 0.5) * 0.05;
+          }
+
+          const icon = L.divIcon({
+            className: 'custom-leaflet-icon',
+            html: buildMarkerHtml(pet),
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+          });
+
+          const m = L.marker([lat, lng], { icon }).addTo(leafletMap);
+          m.on('click', () => setActivePet(pet.id.toString()));
+          leafletMarkers[pet.id] = m;
+        });
         
         attachEvents();
       }
@@ -199,30 +252,29 @@ export async function init() {
     }
   }
 
-  function attachEvents() {
-    let activeId = null;
+  function setActivePet(petId) {
+    document.querySelectorAll('.lost-pet-card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.map-marker').forEach(m => m.classList.remove('active'));
 
-    function setActivePet(petId) {
-      document.querySelectorAll('.lost-pet-card').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.map-marker').forEach(m => m.classList.remove('active'));
+    if (activeId === petId) {
+      activeId = null;
+      return;
+    }
+    activeId = petId;
 
-      if (activeId === petId) {
-        activeId = null;
-        return;
-      }
+    const card = document.querySelector(`.lost-pet-card[data-pet-id="${petId}"]`);
+    if (card) {
+      card.classList.add('active');
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 
-      activeId = petId;
-
-      const card = document.querySelector(`.lost-pet-card[data-pet-id="${petId}"]`);
-      if (card) {
-        card.classList.add('active');
-        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-
-      const marker = document.querySelector(`.map-marker[data-marker-id="${petId}"]`);
-      if (marker) {
-        marker.classList.add('active');
-        const tooltip = marker.querySelector('div > div:last-child');
+    const marker = leafletMarkers[petId];
+    if (marker) {
+      leafletMap.setView(marker.getLatLng(), 15, { animate: true });
+      const el = marker.getElement().querySelector('.map-marker');
+      if (el) {
+        el.classList.add('active');
+        const tooltip = el.querySelector('div > div:last-child');
         if (tooltip) {
           tooltip.classList.remove('opacity-0');
           tooltip.classList.add('opacity-100');
@@ -233,20 +285,43 @@ export async function init() {
         }
       }
     }
+  }
 
+  function attachEvents() {
     petList.addEventListener('click', (e) => {
       const card = e.target.closest('.lost-pet-card');
       if (card) {
         setActivePet(card.getAttribute('data-pet-id'));
       }
     });
-
-    document.querySelectorAll('.map-marker').forEach(marker => {
-      marker.addEventListener('click', () => {
-        setActivePet(marker.getAttribute('data-marker-id'));
-      });
-    });
   }
+
+  // Handle map click for reporting
+  leafletMap.on('click', (e) => {
+    if (document.getElementById('report-modal').classList.contains('hidden') && mapInstructions.classList.contains('hidden')) {
+      return; // Do nothing if not in "select location" mode
+    }
+
+    selectedLat = e.latlng.lat;
+    selectedLng = e.latlng.lng;
+    
+    if (tempMarker) leafletMap.removeLayer(tempMarker);
+    
+    tempMarker = L.marker([selectedLat, selectedLng], {
+      icon: L.divIcon({
+        className: 'custom-leaflet-icon',
+        html: `<div class="w-10 h-10 rounded-full border-4 border-white bg-primary shadow-xl flex items-center justify-center text-white"><span class="material-symbols-outlined text-[20px]">pets</span></div>`,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+      })
+    }).addTo(leafletMap);
+
+    if (!mapInstructions.classList.contains('hidden')) {
+      mapInstructions.classList.add('hidden');
+      document.getElementById('report-modal').classList.remove('hidden');
+      document.getElementById('report-modal').classList.add('flex');
+    }
+  });
 
   // --- Search filter ---
   const searchInput = document.getElementById('lost-pet-search');
@@ -261,18 +336,11 @@ export async function init() {
     });
   }
 
-  // --- Zoom controls (visual only) ---
-  let zoomLevel = 1;
-  const mapBg = document.querySelector('.flex-1.relative .bg-cover');
-  document.getElementById('map-zoom-in')?.addEventListener('click', () => {
-    zoomLevel = Math.min(zoomLevel + 0.15, 2);
-    mapBg.style.transform = `scale(${zoomLevel})`;
-    mapBg.style.transition = 'transform 0.3s ease';
-  });
-  document.getElementById('map-zoom-out')?.addEventListener('click', () => {
-    zoomLevel = Math.max(zoomLevel - 0.15, 0.7);
-    mapBg.style.transform = `scale(${zoomLevel})`;
-    mapBg.style.transition = 'transform 0.3s ease';
+  document.getElementById('select-map-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    mapInstructions.classList.remove('hidden');
   });
 
   // --- Report Modal ---
@@ -314,7 +382,9 @@ export async function init() {
       breed: document.getElementById('report-breed').value,
       location: document.getElementById('report-location').value,
       image_url: document.getElementById('report-image').value,
-      description: document.getElementById('report-desc').value
+      description: document.getElementById('report-desc').value,
+      lat: selectedLat ? selectedLat.toString() : leafletMap.getCenter().lat.toString(),
+      lng: selectedLng ? selectedLng.toString() : leafletMap.getCenter().lng.toString()
     };
 
     try {
