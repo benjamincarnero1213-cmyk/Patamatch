@@ -22,15 +22,15 @@ router.get('/', (req, res) => {
 // POST / — report a lost pet
 router.post('/', requireAuth, (req, res) => {
   try {
-    const { name, breed, location, description } = req.body;
+    const { name, breed, location, description, image_url } = req.body;
 
     if (!name || !location) {
       return res.status(400).json({ success: false, error: 'Name and location are required' });
     }
 
     const result = runQuery(
-      'INSERT INTO lost_pets (name, breed, location, description, user_id) VALUES (?, ?, ?, ?, ?)',
-      [name, breed || null, location, description || null, req.user.id]
+      'INSERT INTO lost_pets (name, breed, location, description, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, breed || null, location, description || null, image_url || null, req.user.id]
     );
 
     const lostPet = queryOne('SELECT * FROM lost_pets WHERE id = ?', [result.lastInsertRowid]);

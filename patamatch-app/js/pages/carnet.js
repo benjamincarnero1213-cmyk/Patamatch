@@ -179,14 +179,14 @@ export async function init() {
   const container = document.getElementById('carnet-container');
 
   if (!api.isLoggedIn()) {
-    container.innerHTML = \`
+    container.innerHTML = `
       <div class="text-center py-20">
         <span class="material-symbols-outlined text-6xl text-outline-variant mb-4">lock</span>
         <h2 class="font-headline-md text-on-surface mb-4">Debes iniciar sesión</h2>
         <p class="text-on-surface-variant mb-6">Inicia sesión para ver tus carnets digitales.</p>
         <a href="#login" class="inline-block px-8 py-3 bg-primary text-on-primary rounded-xl font-label-lg shadow-md">Iniciar Sesión</a>
       </div>
-    \`;
+    `;
     return;
   }
 
@@ -194,13 +194,13 @@ export async function init() {
     const res = await api.getCarnets();
     if (res.success) {
       if (res.data.length === 0) {
-        container.innerHTML = \`
+        container.innerHTML = `
           <div class="text-center py-20 border border-dashed rounded-xl border-outline-variant">
             <span class="material-symbols-outlined text-6xl text-outline-variant mb-4">pets</span>
             <h2 class="font-headline-md text-on-surface mb-2">No tienes carnets vinculados</h2>
             <p class="text-on-surface-variant">Acude a una clínica afiliada para emitir el pasaporte digital de tu mascota.</p>
           </div>
-        \`;
+        `;
       } else {
         // Render the first carnet
         const carnet = res.data[0];

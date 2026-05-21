@@ -193,7 +193,7 @@ export async function init() {
             btn.setAttribute('data-liked', String(is_liked));
             btn.querySelector('.like-count').textContent = like_count;
             const icon = btn.querySelector('.material-symbols-outlined');
-            icon.style.fontVariationSettings = \`'FILL' \${is_liked ? 1 : 0}, 'wght' 400\`;
+            icon.style.fontVariationSettings = `'FILL' ${is_liked ? 1 : 0}, 'wght' 400`;
             
             if (is_liked) {
               btn.classList.add('text-primary');
@@ -282,7 +282,7 @@ export async function init() {
         closeCompose();
         
         // Switch to the category they just posted in and 'recent' to see it
-        document.querySelector(\`.community-cat[data-cat="\${data.category}"]\`)?.click();
+        document.querySelector(`.community-cat[data-cat="${data.category}"]`)?.click();
         document.querySelector('.feed-toggle-btn[data-sort="recent"]')?.click();
       }
     } catch (err) {

@@ -186,8 +186,8 @@ export async function init() {
       const res = await api.getLostPets();
       if (res.success) {
         const pets = res.data;
-        badge.textContent = \`\${pets.length} Encontrados\`;
-        updateText.textContent = \`\${pets.length} reportes activos en tu zona\`;
+        badge.textContent = `${pets.length} Encontrados`;
+        updateText.textContent = `${pets.length} reportes activos en tu zona`;
         
         petList.innerHTML = pets.map(p => buildSidebarCard(p)).join('');
         markersContainer.innerHTML = pets.map(p => buildMarker(p)).join('');
@@ -213,13 +213,13 @@ export async function init() {
 
       activeId = petId;
 
-      const card = document.querySelector(\`.lost-pet-card[data-pet-id="\${petId}"]\`);
+      const card = document.querySelector(`.lost-pet-card[data-pet-id="${petId}"]`);
       if (card) {
         card.classList.add('active');
         card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      const marker = document.querySelector(\`.map-marker[data-marker-id="\${petId}"]\`);
+      const marker = document.querySelector(`.map-marker[data-marker-id="${petId}"]`);
       if (marker) {
         marker.classList.add('active');
         const tooltip = marker.querySelector('div > div:last-child');
@@ -266,12 +266,12 @@ export async function init() {
   const mapBg = document.querySelector('.flex-1.relative .bg-cover');
   document.getElementById('map-zoom-in')?.addEventListener('click', () => {
     zoomLevel = Math.min(zoomLevel + 0.15, 2);
-    mapBg.style.transform = \`scale(\${zoomLevel})\`;
+    mapBg.style.transform = `scale(${zoomLevel})`;
     mapBg.style.transition = 'transform 0.3s ease';
   });
   document.getElementById('map-zoom-out')?.addEventListener('click', () => {
     zoomLevel = Math.max(zoomLevel - 0.15, 0.7);
-    mapBg.style.transform = \`scale(\${zoomLevel})\`;
+    mapBg.style.transform = `scale(${zoomLevel})`;
     mapBg.style.transition = 'transform 0.3s ease';
   });
 
