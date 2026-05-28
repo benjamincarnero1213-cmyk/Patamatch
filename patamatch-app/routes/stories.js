@@ -22,15 +22,15 @@ router.get('/', (req, res) => {
 // POST / — submit a story (pending approval)
 router.post('/', requireAuth, (req, res) => {
   try {
-    const { pet_name, author_name, title, body } = req.body;
+    const { pet_name, author_name, title, body, image_url } = req.body;
 
     if (!title || !body) {
       return res.status(400).json({ success: false, error: 'Title and body are required' });
     }
 
     const result = runQuery(
-      'INSERT INTO stories (pet_name, author_name, title, body, is_approved, user_id) VALUES (?, ?, ?, ?, 0, ?)',
-      [pet_name || null, author_name || null, title, body, req.user.id]
+      'INSERT INTO stories (pet_name, author_name, title, body, image_url, is_approved, user_id) VALUES (?, ?, ?, ?, ?, 1, ?)',
+      [pet_name || null, author_name || null, title, body, image_url || null, req.user.id]
     );
 
     const story = queryOne('SELECT * FROM stories WHERE id = ?', [result.lastInsertRowid]);

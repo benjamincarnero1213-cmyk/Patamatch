@@ -135,6 +135,14 @@ export async function toggleLike(postId) {
   return request('POST', `/posts/${postId}/like`);
 }
 
+export async function getComments(postId) {
+  return request('GET', `/posts/${postId}/comments`);
+}
+
+export async function addComment(postId, body) {
+  return request('POST', `/posts/${postId}/comments`, { body });
+}
+
 // ========== Stories ==========
 export async function getStories(limit, offset) {
   const params = new URLSearchParams();

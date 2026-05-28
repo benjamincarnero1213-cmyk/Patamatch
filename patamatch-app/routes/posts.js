@@ -23,7 +23,7 @@ router.get('/', optionalAuth, (req, res) => {
         u.name AS author_name,
         u.email AS author_email,
         COUNT(pl.id) AS like_count,
-        0 AS comment_count
+        (SELECT COUNT(*) FROM post_comments WHERE post_id = p.id) AS comment_count
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       LEFT JOIN post_likes pl ON pl.post_id = p.id
@@ -102,6 +102,55 @@ router.post('/:id/like', requireAuth, (req, res) => {
   } catch (err) {
     console.error('Toggle like error:', err);
     res.status(500).json({ success: false, error: 'Failed to toggle like' });
+  }
+});
+
+// GET /:id/comments — list comments
+router.get('/:id/comments', (req, res) => {
+  try {
+    const postId = req.params.id;
+    const sql = `
+      SELECT c.*, u.name AS author_name 
+      FROM post_comments c 
+      LEFT JOIN users u ON c.user_id = u.id 
+      WHERE c.post_id = ? 
+      ORDER BY c.created_at ASC
+    `;
+    const comments = queryAll(sql, [postId]);
+    res.json({ success: true, data: comments });
+  } catch (err) {
+    console.error('List comments error:', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch comments' });
+  }
+});
+
+// POST /:id/comments — add a comment
+router.post('/:id/comments', requireAuth, (req, res) => {
+  try {
+    const postId = req.params.id;
+    const { body } = req.body;
+    
+    if (!body || body.trim() === '') {
+      return res.status(400).json({ success: false, error: 'El contenido del comentario es requerido' });
+    }
+
+    const result = runQuery(
+      'INSERT INTO post_comments (post_id, user_id, body) VALUES (?, ?, ?)',
+      [postId, req.user.id, body]
+    );
+
+    const comment = queryOne(
+      `SELECT c.*, u.name AS author_name 
+       FROM post_comments c 
+       LEFT JOIN users u ON c.user_id = u.id 
+       WHERE c.id = ?`,
+      [result.lastInsertRowid]
+    );
+
+    res.status(201).json({ success: true, data: comment });
+  } catch (err) {
+    console.error('Create comment error:', err);
+    res.status(500).json({ success: false, error: 'Failed to add comment' });
   }
 });
 

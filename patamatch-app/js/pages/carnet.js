@@ -15,8 +15,8 @@ function buildCarnetHTML(carnet) {
     return `
       <tr>
         <td class="py-6 font-bold text-on-surface">${v.name}</td>
-        <td class="py-6 text-on-surface-variant">${v.last_date}</td>
-        <td class="py-6 text-on-surface-variant ${v.status === 'expiring' ? 'font-bold text-yellow-600' : ''}">${v.next_date}</td>
+        <td class="py-6 text-on-surface-variant">${v.last_date || v.last_dose || ''}</td>
+        <td class="py-6 text-on-surface-variant ${v.status === 'expiring' ? 'font-bold text-yellow-600' : ''}">${v.next_date || v.next_dose || ''}</td>
         <td class="py-6"><span class="px-3 py-1.5 rounded-lg ${statusClass} text-xs font-bold uppercase tracking-wide">${statusText}</span></td>
       </tr>
     `;
@@ -26,7 +26,7 @@ function buildCarnetHTML(carnet) {
     <div class="border-l-2 border-primary-fixed/30 pl-4 py-1">
       <p class="text-xs font-bold text-primary-fixed mb-1">${h.date}</p>
       <p class="font-bold mb-1">${h.title}</p>
-      <p class="text-sm text-primary-fixed/80">${h.notes}</p>
+      <p class="text-sm text-primary-fixed/80">${h.notes || h.description || ''}</p>
     </div>
   `).join('');
 
@@ -34,7 +34,7 @@ function buildCarnetHTML(carnet) {
   <div class="mb-12 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-6">
     <div>
       <span class="inline-block py-1 px-3 rounded-full bg-secondary-container text-on-secondary-fixed-variant font-label-sm text-label-sm uppercase mb-4 tracking-wider">Identificación Digital Oficial</span>
-      <h1 class="font-headline-xl text-headline-xl text-on-background">Pasaporte Digital de ${carnet.pet_name}</h1>
+      <h1 class="font-headline-xl text-headline-xl text-on-background">Carnet Digital de ${carnet.pet_name}</h1>
       <p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Siempre disponible, actualizado en tiempo real para su seguridad y cuidado.</p>
     </div>
     <div class="flex gap-3 justify-center">
@@ -76,7 +76,7 @@ function buildCarnetHTML(carnet) {
             </div>
             <div>
               <label class="block text-outline font-label-sm text-label-sm uppercase tracking-widest mb-1">Color / Marcas</label>
-              <p class="font-headline-md text-headline-md">${carnet.color}</p>
+              <p class="font-headline-md text-headline-md">${carnet.color || carnet.color_markings || ''}</p>
             </div>
             <div class="col-span-2">
               <label class="block text-outline font-label-sm text-label-sm uppercase tracking-widest mb-1">ID de Microchip</label>
@@ -198,7 +198,7 @@ export async function init() {
           <div class="text-center py-20 border border-dashed rounded-xl border-outline-variant">
             <span class="material-symbols-outlined text-6xl text-outline-variant mb-4">pets</span>
             <h2 class="font-headline-md text-on-surface mb-2">No tienes carnets vinculados</h2>
-            <p class="text-on-surface-variant">Acude a una clínica afiliada para emitir el pasaporte digital de tu mascota.</p>
+            <p class="text-on-surface-variant">Acude a una clínica afiliada para emitir el carnet digital de tu mascota.</p>
           </div>
         `;
       } else {

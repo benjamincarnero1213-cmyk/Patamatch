@@ -4,6 +4,18 @@ export function render() {
 <section class="relative overflow-hidden bg-surface-container-low py-16 lg:py-24">
   <div class="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12 items-center">
     <div class="relative z-10">
+      <!-- PataMatch Logo & Paws Trail -->
+      <div class="flex items-center gap-3 mb-4 select-none">
+        <div class="flex items-center gap-1.5 text-3xl font-black text-[#D96C4A] tracking-tighter">
+          <span class="material-symbols-outlined text-3xl transform -rotate-12 text-[#D96C4A]" style="font-variation-settings: 'FILL' 1;">pets</span>
+          <span>PataMatch</span>
+        </div>
+        <!-- Little paws trail -->
+        <div class="flex items-center gap-1 opacity-30">
+          <span class="material-symbols-outlined text-sm transform rotate-12 text-[#D96C4A]" style="font-variation-settings: 'FILL' 1;">pets</span>
+          <span class="material-symbols-outlined text-xs transform -rotate-12 text-[#D96C4A]" style="font-variation-settings: 'FILL' 1;">pets</span>
+        </div>
+      </div>
       <span class="inline-flex items-center gap-2 px-3 py-1 bg-secondary-container text-secondary text-label-lg rounded-full mb-6">
         <span class="material-symbols-outlined text-[18px]">favorite</span>
         Más de 2,000 mascotas adoptadas

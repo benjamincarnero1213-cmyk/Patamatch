@@ -1,5 +1,24 @@
 import * as api from '../api.js?v=3';;
 
+function buildCommentHTML(c) {
+  const dateObj = new Date(c.created_at);
+  const dateStr = isNaN(dateObj) ? c.created_at : dateObj.toLocaleDateString();
+  return `
+    <div class="flex items-start gap-2.5 text-sm p-3 bg-stone-50 rounded-xl border border-stone-100/50 animate-[fadeIn_0.2s_ease-out]">
+      <div class="w-7 h-7 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs flex-shrink-0">
+        ${c.author_name ? c.author_name[0].toUpperCase() : '?'}
+      </div>
+      <div class="flex-grow">
+        <div class="flex items-center justify-between gap-2 mb-0.5">
+          <span class="font-bold text-stone-700 text-xs">${c.author_name}</span>
+          <span class="text-[10px] text-stone-400 font-medium">${dateStr}</span>
+        </div>
+        <p class="text-stone-600 leading-relaxed text-xs">${c.body}</p>
+      </div>
+    </div>
+  `;
+}
+
 function buildPostCard(post) {
   // post data from API: id, author_name, category, title, body, created_at, like_count, comment_count, is_liked
   
@@ -38,10 +57,23 @@ function buildPostCard(post) {
           <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${fill}, 'wght' 400;">thumb_up</span>
           <span class="like-count">${post.like_count || 0}</span>
         </button>
-        <button class="flex items-center gap-1.5 text-label-lg text-tertiary hover:text-primary">
+        <button class="comment-btn flex items-center gap-1.5 text-label-lg text-tertiary hover:text-primary transition-colors" data-post-id="${post.id}">
           <span class="material-symbols-outlined">chat_bubble_outline</span>
-          <span>${post.comment_count || 0} comentarios</span>
+          <span><span class="comment-count">${post.comment_count || 0}</span> comentarios</span>
         </button>
+      </div>
+
+      <!-- Comments Section (hidden by default) -->
+      <div class="comments-section mt-6 border-t border-stone-100 pt-6 hidden" id="comments-${post.id}">
+        <div class="comments-list space-y-4 mb-6 max-h-60 overflow-y-auto custom-scroll pr-2">
+          <div class="text-xs text-stone-400 italic py-2">Cargando comentarios...</div>
+        </div>
+        <form class="comment-form flex gap-3 mt-4" data-post-id="${post.id}">
+          <input type="text" class="comment-input flex-grow px-4 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md" placeholder="Escribe un comentario..." required />
+          <button type="submit" class="px-5 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity active:scale-[0.98] flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">send</span> Comentar
+          </button>
+        </form>
       </div>
     </article>`;
 }
@@ -178,6 +210,7 @@ export async function init() {
   }
 
   function attachPostEvents() {
+    // Like buttons
     document.querySelectorAll('.like-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         if (!api.isLoggedIn()) {
@@ -205,6 +238,89 @@ export async function init() {
           }
         } catch (err) {
           window.PataMatch.toast('Error al actualizar like', 'error');
+        }
+      });
+    });
+
+    // Comment toggle buttons
+    document.querySelectorAll('.comment-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const postId = btn.getAttribute('data-post-id');
+        const section = document.getElementById(`comments-${postId}`);
+        if (!section) return;
+
+        const isHidden = section.classList.contains('hidden');
+        if (isHidden) {
+          section.classList.remove('hidden');
+          
+          // Load comments
+          const list = section.querySelector('.comments-list');
+          try {
+            const commentsRes = await api.getComments(postId);
+            if (commentsRes.success) {
+              if (commentsRes.data.length === 0) {
+                list.innerHTML = '<p class="text-xs text-stone-400 italic py-2">No hay comentarios en esta publicación. ¡Sé el primero en comentar!</p>';
+              } else {
+                list.innerHTML = commentsRes.data.map(c => buildCommentHTML(c)).join('');
+              }
+            }
+          } catch (err) {
+            list.innerHTML = '<p class="text-xs text-error py-2">Error al cargar comentarios.</p>';
+          }
+        } else {
+          section.classList.add('hidden');
+        }
+      });
+    });
+
+    // Comment submit forms
+    document.querySelectorAll('.comment-form').forEach(form => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!api.isLoggedIn()) {
+          window.PataMatch.toast('Debes iniciar sesión para comentar', 'error');
+          return;
+        }
+
+        const postId = form.getAttribute('data-post-id');
+        const input = form.querySelector('.comment-input');
+        const body = input.value.trim();
+        if (!body) return;
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+
+        try {
+          const res = await api.addComment(postId, body);
+          if (res.success) {
+            input.value = '';
+            
+            // Reload comments list
+            const list = document.querySelector(`#comments-${postId} .comments-list`);
+            const commentsRes = await api.getComments(postId);
+            if (commentsRes.success) {
+              if (commentsRes.data.length === 0) {
+                list.innerHTML = '<p class="text-xs text-stone-400 italic py-2">No hay comentarios en esta publicación. ¡Sé el primero en comentar!</p>';
+              } else {
+                list.innerHTML = commentsRes.data.map(c => buildCommentHTML(c)).join('');
+                
+                // Scroll to the bottom of comment list
+                list.scrollTop = list.scrollHeight;
+              }
+              
+              // Update comments badge
+              const postCard = form.closest('article');
+              const commentCountBadge = postCard.querySelector('.comment-btn .comment-count');
+              if (commentCountBadge) {
+                commentCountBadge.textContent = commentsRes.data.length;
+              }
+            }
+            window.PataMatch.toast('¡Comentario publicado!', 'success');
+          }
+        } catch (err) {
+          window.PataMatch.toast('Error al publicar comentario', 'error');
+        } finally {
+          submitBtn.disabled = false;
         }
       });
     });

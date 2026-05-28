@@ -91,9 +91,22 @@ export function render() {
         <label class="block font-label-sm text-on-surface-variant mb-1">Ubicación</label>
         <input id="pub-location" class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary transition-all" type="text" required />
       </div>
-      <div>
-        <label class="block font-label-sm text-on-surface-variant mb-1">URL de Imagen</label>
-        <input id="pub-image" class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary transition-all" type="url" placeholder="https://..." required />
+      <div class="flex flex-col">
+        <label class="block font-label-sm text-on-surface-variant mb-1">Foto de la Mascota</label>
+        <div id="pub-img-container" class="relative group border-2 border-dashed border-outline-variant hover:border-primary rounded-xl p-4 transition-all bg-surface-container-lowest flex flex-col items-center justify-center cursor-pointer min-h-[96px]">
+          <input id="pub-img-file" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10" required />
+          <div id="pub-img-placeholder" class="text-center flex flex-col items-center gap-1">
+            <span class="material-symbols-outlined text-stone-400 text-2xl group-hover:text-primary transition-colors">cloud_upload</span>
+            <p class="text-[11px] text-stone-500 font-semibold">Subir foto desde la PC</p>
+            <p class="text-[9px] text-stone-400">JPG, PNG, WEBP (Máx. 5MB)</p>
+          </div>
+          <div id="pub-img-preview-container" class="hidden absolute inset-0 w-full h-full rounded-xl overflow-hidden bg-stone-900 z-20">
+            <img id="pub-img-preview" class="w-full h-full object-cover opacity-80" />
+            <button type="button" id="remove-pub-img-btn" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors flex items-center justify-center z-30">
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+        </div>
       </div>
       <div>
         <label class="block font-label-sm text-on-surface-variant mb-1">Descripción</label>
@@ -291,10 +304,51 @@ export async function init() {
     modal.classList.add('flex');
   }
 
+  // --- Local Image Upload & Preview ---
+  let pubImageBase64 = '';
+  const fileInput = document.getElementById('pub-img-file');
+  const previewContainer = document.getElementById('pub-img-preview-container');
+  const previewImg = document.getElementById('pub-img-preview');
+  const placeholder = document.getElementById('pub-img-placeholder');
+  const removeBtn = document.getElementById('remove-pub-img-btn');
+
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        window.PataMatch.toast('La imagen no debe superar los 5MB', 'error');
+        fileInput.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        pubImageBase64 = event.target.result;
+        previewImg.src = pubImageBase64;
+        previewContainer.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  removeBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    pubImageBase64 = '';
+    fileInput.value = '';
+    previewImg.src = '';
+    previewContainer.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+  });
+
   function closeModal() {
     modal.classList.add('hidden');
     modal.classList.remove('flex');
     form.reset();
+    pubImageBase64 = '';
+    previewImg.src = '';
+    previewContainer.classList.add('hidden');
+    placeholder.classList.remove('hidden');
   }
 
   publishBtn?.addEventListener('click', openModal);
@@ -303,6 +357,12 @@ export async function init() {
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    if (!pubImageBase64) {
+      window.PataMatch.toast('Por favor, selecciona una foto de la mascota', 'error');
+      return;
+    }
+
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Guardando...';
@@ -314,7 +374,7 @@ export async function init() {
       age: document.getElementById('pub-age').value,
       size: document.getElementById('pub-size').value,
       location: document.getElementById('pub-location').value,
-      image_url: document.getElementById('pub-image').value,
+      image_url: pubImageBase64,
       description: document.getElementById('pub-desc').value,
       badge: 'Nuevo',
       badge_color: 'secondary'

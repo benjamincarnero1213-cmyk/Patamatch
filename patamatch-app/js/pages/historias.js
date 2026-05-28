@@ -1,5 +1,96 @@
 import * as api from '../api.js?v=3';;
 
+const extendedStories = {
+  'Luna': `Después de 400 días en el refugio, Luna finalmente encontró a su familia ideal con los Miller. Su transformación de una perrita callejera tímida a una compañera juguetona es nada menos que milagrosa.
+  
+  Al principio, Luna pasaba la mayor parte del tiempo escondida debajo de la mesa del comedor, temerosa de cualquier ruido o movimiento brusco. Su nueva familia, con paciencia infinita y mucho cariño, le dio el espacio y el tiempo que necesitaba para sanar. Empezaron ofreciéndole pequeños bocadillos desde lejos, hasta que un día, Luna decidió dar el primer paso y comer directamente de la mano de Sarah Miller.
+  
+  Hoy en día, Luna es la reina indiscutible del hogar. Le encanta correr por el jardín persiguiendo mariposas, dar paseos matutinos por el parque y acurrucarse en el sofá todas las noches para ver la televisión con su familia. Su historia nos recuerda que, con suficiente paciencia y amor, cualquier mascota puede superar su pasado y brillar con luz propia.`,
+
+  'Oliver': `Oliver fue ignorado durante meses debido a su timidez. Hoy, es el rey de un apartamento tranquilo en la ciudad, brindando consuelo infinito a su nueva dueña, Sarah Johnson.
+  
+  Oliver es un hermoso Beagle que solía temblar cada vez que alguien se acercaba a su jaula en el refugio. Su timidez hacía que las familias que buscaban cachorros enérgicos pasaran de largo sin notar sus profundos y expresivos ojos marrones. Sin embargo, cuando Sarah entró al refugio buscando un compañero tranquilo y leal para su apartamento, la conexión fue instantánea.
+  
+  La primera noche en casa, Oliver durmió al lado de la cama de Sarah, como si supiera que finalmente estaba seguro. Con el paso de las semanas, su timidez dio paso a una personalidad dulce y curiosa. Le encanta asomarse por la ventana para ver pasar a la gente y apoyar su cabeza en el regazo de Sarah mientras ella trabaja desde casa. Oliver no solo encontró un hogar, sino que se convirtió en el apoyo emocional perfecto para Sarah, demostrando que a veces, los lazos más fuertes se forjan en el silencio y la tranquilidad.`,
+
+  'Rex': `Rex era un perro de mucha energía que necesitaba un compañero activo. Cuando conoció al corredor de maratones Jake Thompson, fue una combinación perfecta.
+  
+  Rex, un cruce de Border Collie y Pastor con una vitalidad inagotable, había sido devuelto al refugio dos veces porque sus dueños anteriores no podían seguirle el ritmo. Necesitaba correr kilómetros todos los días, jugar a buscar la pelota durante horas y tener retos mentales constantes. Su destino cambió por completo cuando Jake, un apasionado corredor de largas distancias, llegó a PataMatch buscando un compañero de entrenamiento.
+  
+  Desde el primer día, Jake y Rex se volvieron inseparables. Ahora corren juntos todas las mañanas al amanecer, recorriendo senderos de montaña y playas. Rex tiene una resistencia increíble y una felicidad radiante cada vez que ve sus arneses de correr. Por las tardes, después de un día de intensa actividad, Rex descansa plácidamente a los pies de Jake, completamente satisfecho y en paz. Esta historia es el ejemplo perfecto de cómo emparejar a la mascota adecuada con el estilo de vida adecuado crea una armonía perfecta y duradera.`
+};
+
+function openStoryModal(story) {
+  let modal = document.getElementById('story-detail-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'story-detail-modal';
+    modal.className = 'fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none';
+    document.body.appendChild(modal);
+  }
+
+  const nameKey = story.pet_name;
+  const fullText = extendedStories[nameKey] || story.body;
+  const paragraphs = fullText.split('\n\n').map(p => `<p class="mb-4 text-stone-600 leading-relaxed text-base">${p}</p>`).join('');
+
+  modal.innerHTML = `
+    <div class="bg-white rounded-[2rem] max-w-2xl w-full overflow-hidden shadow-2xl border border-stone-100 transition-all duration-300 scale-95 opacity-0 flex flex-col max-h-[85vh]" id="story-modal-panel">
+      <div class="h-64 md:h-80 overflow-hidden relative flex-shrink-0">
+        <img alt="${story.title}" class="w-full h-full object-cover" src="${story.image_url || 'https://via.placeholder.com/600x400'}"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-stone-900/70 to-transparent"></div>
+        <button class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors flex items-center justify-center backdrop-blur-md border border-white/10" id="close-modal-btn">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+        <div class="absolute bottom-6 left-6 pr-6">
+          <span class="inline-block bg-primary text-on-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">${story.badge || 'Final Feliz'}</span>
+          <h2 class="font-headline-xl text-white mt-3 text-2xl md:text-3xl leading-tight shadow-sm">${story.title}</h2>
+        </div>
+      </div>
+      <div class="p-8 overflow-y-auto custom-scroll flex-grow">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-stone-100">
+          <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-primary border border-orange-100">
+            <span class="material-symbols-outlined text-[20px]">person</span>
+          </div>
+          <div>
+            <p class="text-xs text-stone-400 font-bold uppercase tracking-widest">Escrita por</p>
+            <p class="font-semibold text-stone-700">${story.author_name}</p>
+          </div>
+        </div>
+        <div class="prose max-w-none">
+          ${paragraphs}
+          ${!extendedStories[nameKey] ? `
+            <div class="mt-8 pt-6 border-t border-dashed border-stone-200">
+              <p class="text-stone-500 italic text-sm text-center">¡Cada historia de éxito nos llena de alegría! En PataMatch seguimos conectando mascotas con hogares llenos de amor. Si tú también quieres cambiar una vida, visita nuestra sección de adopción.</p>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+
+  requestAnimationFrame(() => {
+    modal.classList.remove('pointer-events-none', 'opacity-0');
+    modal.classList.add('opacity-100');
+    const panel = document.getElementById('story-modal-panel');
+    panel.classList.remove('scale-95', 'opacity-0');
+    panel.classList.add('scale-100', 'opacity-100');
+  });
+
+  const closeModal = () => {
+    modal.classList.remove('opacity-100');
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    const panel = document.getElementById('story-modal-panel');
+    panel.classList.remove('scale-100', 'opacity-100');
+    panel.classList.add('scale-95', 'opacity-0');
+  };
+
+  modal.onclick = (e) => {
+    if (e.target === modal) closeModal();
+  };
+
+  document.getElementById('close-modal-btn').onclick = closeModal;
+}
+
 function buildStoryCard(story, index) {
   return `
     <article class="group bg-surface-container-lowest rounded-[1rem] overflow-hidden story-card-shadow border border-surface-variant transition-all hover:-translate-y-1" style="animation: fadeIn 0.5s ease-out both; animation-delay: ${index * 0.15}s;">
@@ -15,7 +106,7 @@ function buildStoryCard(story, index) {
         <p class="text-on-surface-variant mb-6 line-clamp-3 flex-grow">${story.body}</p>
         <div class="flex justify-between items-center mt-auto">
           <p class="text-label-sm text-tertiary">Por: ${story.author_name}</p>
-          <a class="inline-flex items-center gap-2 text-primary font-label-lg hover:underline transition-all cursor-pointer">
+          <a class="read-more-btn inline-flex items-center gap-2 text-primary font-label-lg hover:underline transition-all cursor-pointer" data-id="${story.id}">
             Leer Más
             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
           </a>
@@ -81,9 +172,22 @@ export function render() {
             <label class="font-label-lg block text-on-surface-variant">Nombre de la Mascota</label>
             <input id="story-pet" class="w-full bg-surface-container-low border-outline rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Ej: Bella" type="text" required/>
           </div>
-          <div class="space-y-2">
-            <label class="font-label-lg block text-on-surface-variant">URL de Imagen</label>
-            <input id="story-img" class="w-full bg-surface-container-low border-outline rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="https://..." type="url" required/>
+          <div class="space-y-2 flex flex-col">
+            <label class="font-label-lg block text-on-surface-variant">Foto de la Mascota</label>
+            <div id="story-img-container" class="relative group border-2 border-dashed border-outline-variant hover:border-primary rounded-xl p-4 transition-all bg-surface-container-low flex flex-col items-center justify-center cursor-pointer min-h-[96px]">
+              <input id="story-img-file" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10" required />
+              <div id="story-img-placeholder" class="text-center flex flex-col items-center gap-1">
+                <span class="material-symbols-outlined text-stone-400 text-2xl group-hover:text-primary transition-colors">cloud_upload</span>
+                <p class="text-[11px] text-stone-500 font-semibold">Subir foto desde la PC</p>
+                <p class="text-[9px] text-stone-400">JPG, PNG, WEBP (Máx. 5MB)</p>
+              </div>
+              <div id="story-img-preview-container" class="hidden absolute inset-0 w-full h-full rounded-xl overflow-hidden bg-stone-900 z-20">
+                <img id="story-img-preview" class="w-full h-full object-cover opacity-80" />
+                <button type="button" id="remove-story-img-btn" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors flex items-center justify-center z-30">
+                  <span class="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div class="space-y-2">
@@ -127,6 +231,7 @@ export async function init() {
           grid.innerHTML = '<div class="col-span-full text-center py-10 text-on-surface-variant border border-dashed rounded-xl border-outline-variant">Aún no hay historias publicadas.</div>';
           loadBtn.classList.add('hidden');
         } else {
+          allStories = [...allStories, ...stories];
           const newHtml = stories.map((s, i) => buildStoryCard(s, i)).join('');
           grid.insertAdjacentHTML('beforeend', newHtml);
           
@@ -152,12 +257,67 @@ export async function init() {
   // Initial load
   loadStories();
 
+  // Handle click on "Leer Más"
+  grid?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.read-more-btn');
+    if (btn) {
+      e.preventDefault();
+      const storyId = parseInt(btn.getAttribute('data-id'), 10);
+      const story = allStories.find(s => s.id === storyId);
+      if (story) {
+        openStoryModal(story);
+      }
+    }
+  });
+
+  // --- Local Image Upload & Preview ---
+  let storyImageBase64 = '';
+  const fileInput = document.getElementById('story-img-file');
+  const previewContainer = document.getElementById('story-img-preview-container');
+  const previewImg = document.getElementById('story-img-preview');
+  const placeholder = document.getElementById('story-img-placeholder');
+  const removeBtn = document.getElementById('remove-story-img-btn');
+
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        window.PataMatch.toast('La imagen no debe superar los 5MB', 'error');
+        fileInput.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        storyImageBase64 = event.target.result;
+        previewImg.src = storyImageBase64;
+        previewContainer.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  removeBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    storyImageBase64 = '';
+    fileInput.value = '';
+    previewImg.src = '';
+    previewContainer.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+  });
+
   // Story Form Submission
   const form = document.getElementById('story-form');
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!api.isLoggedIn()) {
       window.PataMatch.toast('Debes iniciar sesión para compartir tu historia', 'error');
+      return;
+    }
+
+    if (!storyImageBase64) {
+      window.PataMatch.toast('Por favor, selecciona una foto de tu mascota', 'error');
       return;
     }
 
@@ -170,7 +330,7 @@ export async function init() {
     const data = {
       title: document.getElementById('story-title').value,
       pet_name: document.getElementById('story-pet').value,
-      image_url: document.getElementById('story-img').value,
+      image_url: storyImageBase64,
       body: document.getElementById('story-body').value,
       author_name: user?.name || 'Anónimo'
     };
@@ -180,6 +340,11 @@ export async function init() {
       if (res.success) {
         window.PataMatch.toast('¡Historia enviada! Será revisada y publicada pronto.', 'success');
         form.reset();
+        // Reset preview
+        storyImageBase64 = '';
+        previewImg.src = '';
+        previewContainer.classList.add('hidden');
+        placeholder.classList.remove('hidden');
       }
     } catch (err) {
       window.PataMatch.toast(err.message || 'Error al enviar historia', 'error');

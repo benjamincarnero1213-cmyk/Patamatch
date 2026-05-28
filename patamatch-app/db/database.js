@@ -102,6 +102,18 @@ async function initDatabase() {
   `);
 
   db.run(`
+    CREATE TABLE IF NOT EXISTS post_comments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      post_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      body TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  db.run(`
     CREATE TABLE IF NOT EXISTS stories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       pet_name TEXT NOT NULL,
@@ -159,6 +171,62 @@ async function initDatabase() {
   const count = res.length > 0 ? res[0].values[0][0] : 0;
   if (count === 0) {
     seedDatabase();
+  }
+
+  // Ensure every demo user has a carnet (works even if database already existed)
+  try {
+    const demoUsers = queryAll("SELECT id, name, email FROM users WHERE email IN ('demo@patamatch.com', 'david@patamatch.com', 'sarah@patamatch.com')");
+    for (const u of demoUsers) {
+      const existing = queryOne("SELECT COUNT(*) as count FROM carnets WHERE user_id = ?", [u.id]);
+      if (existing && existing.count === 0) {
+        console.log(`🌱 Creating fictitious carnet for ${u.email}...`);
+        if (u.email === 'demo@patamatch.com') {
+          const vacc = JSON.stringify([
+            { name: 'Rabia 3 Años', last_dose: '10 May, 2023', next_dose: '10 May, 2026', status: 'updated' },
+            { name: 'DHPP (Distémper)', last_dose: '12 Ene, 2024', next_dose: '12 Ene, 2025', status: 'updated' },
+            { name: 'Parvovirus', last_dose: '15 Mar, 2024', next_dose: '15 Mar, 2025', status: 'updated' }
+          ]);
+          const hist = JSON.stringify([
+            { date: '12 ENE, 2024', title: 'Consulta de Rutina', description: 'Excelente estado de salud general. Peso ideal de 28.5kg.' },
+            { date: '20 NOV, 2023', title: 'Vacunación Anual', description: 'Aplicación de refuerzo óctuple sin reacciones adversas.' }
+          ]);
+          db.run('INSERT INTO carnets (pet_name,species,breed,gender,color_markings,microchip_id,image_url,qr_url,birth_date,vaccinations,medical_history,vet_name,vet_clinic,vet_phone,vet_image,owner_name,owner_city,user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            ['Bella', 'Canino (Perro)', 'Golden Retriever', 'Hembra', 'Dorado Brillante', '9851 9876 5432 109',
+            'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=600',
+            '', '2022-04-15', vacc, hist, 'Dr. Carlos Mendoza', 'Hospital Veterinario Pets Life', '(55) 5555-9876', '',
+            u.name, 'CDMX', u.id]);
+        } else if (u.email === 'david@patamatch.com') {
+          const vacc = JSON.stringify([
+            { name: 'Triple Felina', last_dose: '15 Feb, 2024', next_dose: '15 Feb, 2025', status: 'updated' },
+            { name: 'Leucemia Felina', last_dose: '15 Feb, 2024', next_dose: '15 Feb, 2025', status: 'updated' }
+          ]);
+          const hist = JSON.stringify([
+            { date: '15 FEB, 2024', title: 'Chequeo Preventivo', description: 'Revisión dental limpia, ojos brillantes y pelaje sedoso.' }
+          ]);
+          db.run('INSERT INTO carnets (pet_name,species,breed,gender,color_markings,microchip_id,image_url,qr_url,birth_date,vaccinations,medical_history,vet_name,vet_clinic,vet_phone,vet_image,owner_name,owner_city,user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            ['Max', 'Felino (Gato)', 'Siamés', 'Macho', 'Gris y Crema', '9851 1122 3344 556',
+            'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=600',
+            '', '2023-01-20', vacc, hist, 'Dra. Ana Gómez', 'Clínica Felina Santa Lucía', '(55) 4433-2211', '',
+            u.name, 'Austin, TX', u.id]);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error ensuring demo user carnets:', err);
+  }
+
+  // Ensure initial comments exist
+  try {
+    const existingComments = queryOne("SELECT COUNT(*) as count FROM post_comments");
+    if (!existingComments || existingComments.count === 0) {
+      console.log('🌱 Seeding initial comments...');
+      db.run("INSERT INTO post_comments (post_id, user_id, body) VALUES (?, ?, ?)", [1, 2, '¡El parque de Lafayette Park es buenísimo! Tiene un área especial cerrada para razas pequeñas y el césped está siempre impecable.']);
+      db.run("INSERT INTO post_comments (post_id, user_id, body) VALUES (?, ?, ?)", [1, 3, '¡Confirmo! Yo llevo a mi chihuahua ahí y le encanta. Además la vista es hermosa.']);
+      db.run("INSERT INTO post_comments (post_id, user_id, body) VALUES (?, ?, ?)", [2, 1, 'A nosotros nos sirvió mucho dejarle una prenda de ropa usada con nuestro olor en su camita. ¡Se calma muchísimo!']);
+      db.run("INSERT INTO post_comments (post_id, user_id, body) VALUES (?, ?, ?)", [2, 3, 'Intenta también los juguetes tipo Kong rellenos de crema de cacahuate congelada. Los mantiene ocupados por horas y asocian quedarse solos con algo positivo.']);
+    }
+  } catch (err) {
+    console.error('Error seeding comments:', err);
   }
 
   saveDatabase();

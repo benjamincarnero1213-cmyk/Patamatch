@@ -6,6 +6,16 @@ const { requireAuth } = require('../middleware/auth');
 router.get('/', requireAuth, (req, res) => {
   try {
     const carnets = queryAll('SELECT * FROM carnets WHERE user_id = ? ORDER BY created_at DESC', [req.user.id]);
+    
+    // Parse JSON fields if they are stored as strings
+    for (const carnet of carnets) {
+      if (carnet.vaccinations && typeof carnet.vaccinations === 'string') {
+        try { carnet.vaccinations = JSON.parse(carnet.vaccinations); } catch (_) {}
+      }
+      if (carnet.medical_history && typeof carnet.medical_history === 'string') {
+        try { carnet.medical_history = JSON.parse(carnet.medical_history); } catch (_) {}
+      }
+    }
 
     res.json({ success: true, data: carnets });
   } catch (err) {
