@@ -67,6 +67,10 @@ export async function getMe() {
   return request('GET', '/auth/me');
 }
 
+export async function updateProfile(data) {
+  return request('PUT', '/auth/me', data);
+}
+
 export function logout() {
   clearToken();
   if (window.PataMatch) window.PataMatch.user = null;

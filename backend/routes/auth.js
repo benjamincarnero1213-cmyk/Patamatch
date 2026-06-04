@@ -66,7 +66,7 @@ router.post('/login', (req, res) => {
 // GET /me
 router.get('/me', requireAuth, (req, res) => {
   try {
-    const user = queryOne('SELECT id, name, email, city, created_at FROM users WHERE id = ?', [req.user.id]);
+    const user = queryOne('SELECT id, name, email, city, avatar_url, created_at FROM users WHERE id = ?', [req.user.id]);
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found' });
     }
@@ -75,6 +75,28 @@ router.get('/me', requireAuth, (req, res) => {
   } catch (err) {
     console.error('Get me error:', err);
     res.status(500).json({ success: false, error: 'Failed to fetch user data' });
+  }
+});
+
+// PUT /me
+router.put('/me', requireAuth, (req, res) => {
+  try {
+    const { name, avatar_url } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ success: false, error: 'Name is required' });
+    }
+
+    runQuery(
+      'UPDATE users SET name = ?, avatar_url = ? WHERE id = ?',
+      [name, avatar_url || '', req.user.id]
+    );
+
+    const user = queryOne('SELECT id, name, email, city, avatar_url, created_at FROM users WHERE id = ?', [req.user.id]);
+    res.json({ success: true, data: user });
+  } catch (err) {
+    console.error('Update me error:', err);
+    res.status(500).json({ success: false, error: 'Failed to update user data' });
   }
 });
 

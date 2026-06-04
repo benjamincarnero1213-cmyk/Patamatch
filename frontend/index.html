@@ -183,9 +183,15 @@
             <div id="user-menu" class="hidden flex items-center gap-3">
                 <span class="material-symbols-outlined text-stone-600 cursor-pointer hover:text-[#D96C4A] p-2 hover:bg-orange-50 rounded-full transition-colors">notifications</span>
                 <div class="relative group">
-                    <span class="material-symbols-outlined text-stone-600 cursor-pointer hover:text-[#D96C4A] p-2 hover:bg-orange-50 rounded-full transition-colors">account_circle</span>
+                    <div id="user-avatar-trigger" class="cursor-pointer p-1 rounded-full hover:bg-orange-50 transition-colors flex items-center justify-center">
+                        <span class="material-symbols-outlined text-stone-600">account_circle</span>
+                    </div>
                     <div class="absolute right-0 top-full pt-2 hidden group-hover:block z-50">
                         <div class="bg-white rounded-xl shadow-xl border border-stone-100 p-2 min-w-[180px]">
+                            <a href="#perfil" class="flex items-center gap-3 px-4 py-3 text-sm text-stone-600 hover:bg-orange-50 rounded-lg transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">person</span>
+                                Mi Perfil
+                            </a>
                             <a href="#carnet" class="flex items-center gap-3 px-4 py-3 text-sm text-stone-600 hover:bg-orange-50 rounded-lg transition-colors">
                                 <span class="material-symbols-outlined text-[18px]">badge</span>
                                 Carnet Digital
@@ -359,7 +365,8 @@
             historias: 'PataMatch — Historias de Éxito',
             login: 'PataMatch — Iniciar Sesión',
             registro: 'PataMatch — Registro',
-            carnet: 'PataMatch — Carnet Digital de Mascota'
+            carnet: 'PataMatch — Carnet Digital de Mascota',
+            perfil: 'PataMatch — Mi Perfil'
         };
         document.title = titles[hash] || 'PataMatch';
         
@@ -389,14 +396,21 @@
         });
     }
 
-    // ========== Auth State ==========
     function updateAuthUI() {
         const authButtons = document.getElementById('auth-buttons');
         const userMenu = document.getElementById('user-menu');
+        const avatarTrigger = document.getElementById('user-avatar-trigger');
+        
         if (window.PataMatch.user) {
             authButtons.classList.add('hidden');
             userMenu.classList.remove('hidden');
             userMenu.classList.add('flex');
+            
+            if (window.PataMatch.user.avatar_url) {
+                avatarTrigger.innerHTML = `<img src="${window.PataMatch.user.avatar_url}" alt="Avatar" class="w-8 h-8 rounded-full object-cover shadow-sm border border-stone-200" onerror="this.outerHTML='<span class=\\'material-symbols-outlined text-stone-600\\'>account_circle</span>'"/>`;
+            } else {
+                avatarTrigger.innerHTML = `<span class="material-symbols-outlined text-stone-600">account_circle</span>`;
+            }
         } else {
             authButtons.classList.remove('hidden');
             userMenu.classList.add('hidden');
