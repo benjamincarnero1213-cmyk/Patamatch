@@ -3,7 +3,7 @@
 // Centralized module for all backend API calls
 // ============================================
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = '/api';
 
 function getToken() {
   return localStorage.getItem('patamatch_token');
