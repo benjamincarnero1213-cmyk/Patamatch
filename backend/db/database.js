@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const DB_PATH = path.join(__dirname, 'patamatch.db');
+const DB_PATH = process.env.VERCEL ? path.join('/tmp', 'patamatch.db') : path.join(__dirname, 'patamatch.db');
 
 let db = null;
 
@@ -235,9 +235,13 @@ async function initDatabase() {
 
 function saveDatabase() {
   if (!db) return;
-  const data = db.export();
-  const buffer = Buffer.from(data);
-  fs.writeFileSync(DB_PATH, buffer);
+  try {
+    const data = db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(DB_PATH, buffer);
+  } catch (err) {
+    console.warn('Could not save DB to disk:', err.message);
+  }
 }
 
 // Helper: run a query and return results as array of objects
