@@ -322,7 +322,8 @@ async function seedDatabase() {
 
   const allPets = [...pets, ...adopted];
   for (const p of allPets) {
-    await runQuery('INSERT INTO pets (name,species,breed,age,size,location,image_url,badge,badge_color,description,is_adopted,adopted_quote) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', p);
+    p.push(1);
+    await runQuery('INSERT INTO pets (name,species,breed,age,size,location,image_url,badge,badge_color,description,is_adopted,adopted_quote,user_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)', p);
   }
 
   // Lost pets
