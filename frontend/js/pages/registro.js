@@ -57,13 +57,36 @@ export function render() {
                 <span class="material-symbols-outlined text-[20px]">visibility</span>
               </button>
             </div>
-            <p class="text-error text-xs hidden" id="reg-password-error">Mínimo 6 caracteres</p>
+            <p class="text-error text-xs hidden" id="reg-password-error">Mínimo 8 caracteres</p>
+            <!-- Password strength indicator -->
+            <div id="password-strength-container" class="hidden mt-2">
+              <div class="flex gap-1 mb-1.5">
+                <div class="h-1 flex-1 rounded-full bg-stone-200 overflow-hidden">
+                  <div id="strength-bar-1" class="h-full w-0 rounded-full transition-all duration-300"></div>
+                </div>
+                <div class="h-1 flex-1 rounded-full bg-stone-200 overflow-hidden">
+                  <div id="strength-bar-2" class="h-full w-0 rounded-full transition-all duration-300"></div>
+                </div>
+                <div class="h-1 flex-1 rounded-full bg-stone-200 overflow-hidden">
+                  <div id="strength-bar-3" class="h-full w-0 rounded-full transition-all duration-300"></div>
+                </div>
+              </div>
+              <p id="strength-text" class="text-[11px] font-semibold text-stone-400 flex items-center gap-1"></p>
+              <div class="mt-1 space-y-0.5">
+                <p class="text-[10px] text-stone-400" id="req-length">&#x2022; Mínimo 8 caracteres</p>
+                <p class="text-[10px] text-stone-400" id="req-number">&#x2022; Al menos 1 número</p>
+                <p class="text-[10px] text-stone-400" id="req-upper">&#x2022; Al menos 1 mayúscula</p>
+              </div>
+            </div>
           </div>
           <div class="space-y-xs">
             <label class="font-label-lg text-on-surface-variant block ml-xs" for="reg-city">Ciudad</label>
             <div class="relative flex items-center">
               <span class="material-symbols-outlined absolute left-4 text-outline">location_on</span>
-              <input class="w-full pl-12 pr-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-0 outline-none transition-all bg-surface-bright placeholder:text-outline" id="reg-city" placeholder="Ciudad" type="text" required/>
+              <input class="w-full pl-12 pr-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-0 outline-none transition-all bg-surface-bright placeholder:text-outline" id="reg-city" placeholder="Escribe tu ciudad..." type="text" required autocomplete="off" />
+              <!-- City suggestions dropdown -->
+              <div id="city-suggestions" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-stone-100 max-h-48 overflow-y-auto z-50 custom-scroll">
+              </div>
             </div>
             <p class="text-error text-xs hidden" id="reg-city-error">La ciudad es requerida</p>
           </div>
@@ -222,5 +245,104 @@ export function init() {
         if (termsError) termsError.classList.add('hidden');
       });
     }
+  }
+
+  // ========== Password Strength Indicator ==========
+  const pwdInput = document.getElementById('reg-password');
+  const strengthContainer = document.getElementById('password-strength-container');
+  const bar1 = document.getElementById('strength-bar-1');
+  const bar2 = document.getElementById('strength-bar-2');
+  const bar3 = document.getElementById('strength-bar-3');
+  const strengthText = document.getElementById('strength-text');
+  const reqLength = document.getElementById('req-length');
+  const reqNumber = document.getElementById('req-number');
+  const reqUpper = document.getElementById('req-upper');
+
+  if (pwdInput && strengthContainer) {
+    pwdInput.addEventListener('input', () => {
+      const val = pwdInput.value;
+      if (!val) {
+        strengthContainer.classList.add('hidden');
+        return;
+      }
+      strengthContainer.classList.remove('hidden');
+
+      const hasLength = val.length >= 8;
+      const hasNumber = /\d/.test(val);
+      const hasUpper = /[A-Z]/.test(val);
+      let score = [hasLength, hasNumber, hasUpper].filter(Boolean).length;
+
+      // Update requirement indicators
+      reqLength.classList.toggle('text-secondary', hasLength);
+      reqLength.classList.toggle('font-semibold', hasLength);
+      reqNumber.classList.toggle('text-secondary', hasNumber);
+      reqNumber.classList.toggle('font-semibold', hasNumber);
+      reqUpper.classList.toggle('text-secondary', hasUpper);
+      reqUpper.classList.toggle('font-semibold', hasUpper);
+
+      const colors = { 0: 'bg-stone-300', 1: 'bg-red-400', 2: 'bg-amber-400', 3: 'bg-green-500' };
+      const labels = { 0: '', 1: 'Débil', 2: 'Media', 3: 'Fuerte ✅' };
+      const textColors = { 0: 'text-stone-400', 1: 'text-red-500', 2: 'text-amber-600', 3: 'text-green-600' };
+      const color = colors[score];
+
+      bar1.className = `h-full rounded-full transition-all duration-300 ${score >= 1 ? color + ' w-full' : 'w-0'}`;
+      bar2.className = `h-full rounded-full transition-all duration-300 ${score >= 2 ? color + ' w-full' : 'w-0'}`;
+      bar3.className = `h-full rounded-full transition-all duration-300 ${score >= 3 ? color + ' w-full' : 'w-0'}`;
+      strengthText.className = `text-[11px] font-semibold ${textColors[score]} flex items-center gap-1`;
+      strengthText.textContent = labels[score];
+    });
+  }
+
+  // ========== City Autocomplete ==========
+  const cityInput = document.getElementById('reg-city');
+  const citySuggestions = document.getElementById('city-suggestions');
+
+  const cities = [
+    'Ciudad de México', 'Guadalajara', 'Monterrey', 'Puebla', 'Querétaro', 'Cancún', 'Mérida', 'León', 'Tijuana', 'Oaxaca',
+    'Toluca', 'Aguascalientes', 'San Luis Potosí', 'Morelia', 'Chihuahua', 'Veracruz', 'Hermosillo', 'Saltillo', 'Villahermosa',
+    'Buenos Aires', 'Córdoba', 'Rosario', 'Mendoza', 'Bogotá', 'Medellín', 'Cali', 'Lima', 'Santiago', 'Valparaiso',
+    'São Paulo', 'Río de Janeiro', 'Quito', 'Guayaquil', 'Caracas', 'Montevideo', 'Asunción', 'La Paz', 'San José',
+    'Panamá', 'San Salvador', 'Guatemala', 'Tegucigalpa', 'Managua', 'Santo Domingo', 'La Habana'
+  ];
+
+  if (cityInput && citySuggestions) {
+    cityInput.addEventListener('input', () => {
+      const query = cityInput.value.toLowerCase().trim();
+      if (query.length < 2) {
+        citySuggestions.classList.add('hidden');
+        return;
+      }
+
+      const matches = cities.filter(c => c.toLowerCase().includes(query)).slice(0, 6);
+      if (matches.length === 0) {
+        citySuggestions.classList.add('hidden');
+        return;
+      }
+
+      citySuggestions.innerHTML = matches.map(c => `
+        <button type="button" class="city-option w-full text-left px-4 py-2.5 text-sm text-stone-700 hover:bg-orange-50 transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-[16px] text-stone-400">location_on</span>
+          ${c}
+        </button>
+      `).join('');
+      citySuggestions.classList.remove('hidden');
+
+      citySuggestions.querySelectorAll('.city-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          cityInput.value = opt.textContent.trim();
+          citySuggestions.classList.add('hidden');
+        });
+      });
+    });
+
+    cityInput.addEventListener('blur', () => {
+      setTimeout(() => citySuggestions.classList.add('hidden'), 200);
+    });
+
+    cityInput.addEventListener('focus', () => {
+      if (cityInput.value.length >= 2) {
+        cityInput.dispatchEvent(new Event('input'));
+      }
+    });
   }
 }

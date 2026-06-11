@@ -25,11 +25,11 @@ export function render() {
         Unimos corazones y huellas. Ya sea que estés buscando a tu nuevo mejor amigo o necesites ayuda para encontrar a un compañero perdido, nuestra comunidad está aquí para apoyarte.
       </p>
       <div class="flex flex-wrap gap-4">
-        <button data-navigate="adoptar" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold flex items-center gap-2 shadow-lg active:scale-[0.98] transition-all">
+        <button data-navigate="adoptar" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold flex items-center gap-2 shadow-lg active:scale-[0.98] transition-all hover:shadow-xl">
           <span class="material-symbols-outlined">pets</span>
           Quiero adoptar
         </button>
-        <button data-navigate="mascotas-perdidas" class="bg-surface-container-highest text-primary px-8 py-4 rounded-xl font-bold border-2 border-primary/20 flex items-center gap-2 active:scale-[0.98] transition-all">
+        <button data-navigate="mascotas-perdidas" class="bg-transparent text-primary px-8 py-4 rounded-xl font-bold border-2 border-primary/40 flex items-center gap-2 active:scale-[0.98] transition-all hover:bg-primary/5 hover:border-primary/60">
           <span class="material-symbols-outlined">notification_important</span>
           Reportar mascota perdida
         </button>
@@ -57,7 +57,8 @@ export function render() {
 </section>
 
 <!-- Lost Pet Alerts: Bento Grid Layout -->
-<section class="py-xl max-w-7xl mx-auto px-6 md:px-12">
+<section class="py-xl bg-stone-100/60 border-y border-stone-200/40">
+  <div class="max-w-7xl mx-auto px-6 md:px-12">
   <div class="flex items-end justify-between mb-10">
     <div>
       <h2 class="font-headline-lg text-on-surface">Alertas Recientes</h2>
@@ -124,6 +125,7 @@ export function render() {
       </div>
       <button data-navigate="mascotas-perdidas" class="bg-secondary text-on-secondary w-fit px-8 py-3 rounded-xl font-bold shadow-md">Publicar Alerta</button>
     </div>
+  </div>
   </div>
 </section>
 

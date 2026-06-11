@@ -93,23 +93,28 @@ export function render() {
         <nav class="space-y-1" id="community-categories">
           <a class="community-cat flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-bold cursor-pointer" data-cat="all">
             <span class="material-symbols-outlined">forum</span>
-            <span>Todas las charlas</span>
+            <span class="flex-1">Todas las charlas</span>
+            <span class="cat-count text-[11px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-bold" data-cat-count="all"></span>
           </a>
           <a class="community-cat flex items-center gap-3 px-3 py-2.5 rounded-lg text-tertiary hover:bg-surface-container-high transition-colors cursor-pointer" data-cat="tips">
             <span class="material-symbols-outlined">lightbulb</span>
-            <span>Consejos Generales</span>
+            <span class="flex-1">Consejos Generales</span>
+            <span class="cat-count text-[11px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full font-bold" data-cat-count="tips"></span>
           </a>
           <a class="community-cat flex items-center gap-3 px-3 py-2.5 rounded-lg text-tertiary hover:bg-surface-container-high transition-colors cursor-pointer" data-cat="health">
             <span class="material-symbols-outlined">health_and_safety</span>
-            <span>Salud y Nutrición</span>
+            <span class="flex-1">Salud y Nutrición</span>
+            <span class="cat-count text-[11px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full font-bold" data-cat-count="health"></span>
           </a>
           <a class="community-cat flex items-center gap-3 px-3 py-2.5 rounded-lg text-tertiary hover:bg-surface-container-high transition-colors cursor-pointer" data-cat="events">
             <span class="material-symbols-outlined">event</span>
-            <span>Eventos Locales</span>
+            <span class="flex-1">Eventos Locales</span>
+            <span class="cat-count text-[11px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full font-bold" data-cat-count="events"></span>
           </a>
           <a class="community-cat flex items-center gap-3 px-3 py-2.5 rounded-lg text-tertiary hover:bg-surface-container-high transition-colors cursor-pointer" data-cat="search">
             <span class="material-symbols-outlined">support</span>
-            <span>Apoyo en Búsqueda</span>
+            <span class="flex-1">Apoyo en Búsqueda</span>
+            <span class="cat-count text-[11px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full font-bold" data-cat-count="search"></span>
           </a>
         </nav>
       </div>
@@ -139,14 +144,23 @@ export function render() {
         <div class="text-center py-10 text-on-surface-variant">Cargando publicaciones...</div>
       </div>
 
-      <!-- Discussion Prompt -->
-      <div class="bg-surface-container-highest/50 border-2 border-dashed border-outline-variant rounded-xl p-xl flex flex-col items-center text-center">
-        <div class="bg-white p-4 rounded-full shadow-sm mb-md">
-          <span class="material-symbols-outlined text-4xl text-primary">add_comment</span>
+      <!-- Quick Question Prompt -->
+      <div class="bg-surface-container-highest/50 border border-outline-variant/40 rounded-xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="bg-white p-2.5 rounded-full shadow-sm">
+            <span class="material-symbols-outlined text-xl text-primary">help_outline</span>
+          </div>
+          <div>
+            <h3 class="font-label-lg text-on-surface">¿No encuentras lo que buscas?</h3>
+            <p class="text-xs text-tertiary">Haz una pregunta rápida a la comunidad</p>
+          </div>
         </div>
-        <h3 class="font-headline-md text-on-surface mb-xs">¿Tienes alguna pregunta?</h3>
-        <p class="text-tertiary mb-lg max-w-sm">Comparte tus experiencias o pide consejo a nuestra comunidad de expertos y entusiastas de las mascotas.</p>
-        <button id="start-chat-btn" class="bg-primary text-on-primary px-xl py-md rounded-full font-bold text-label-lg shadow-lg active:scale-95 duration-150">Iniciar una charla</button>
+        <form id="quick-question-form" class="flex gap-3">
+          <input type="text" id="quick-question-input" class="flex-grow px-4 py-3 text-sm bg-white border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md" placeholder="Escribe tu pregunta aquí..." required />
+          <button type="submit" class="px-5 py-3 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity active:scale-[0.98] flex items-center gap-1.5 whitespace-nowrap">
+            <span class="material-symbols-outlined text-[16px]">send</span> Preguntar
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -203,10 +217,31 @@ export async function init() {
           postsContainer.innerHTML = res.data.map(p => buildPostCard(p)).join('');
           attachPostEvents();
         }
+
+        // Update category counters
+        updateCategoryCounts(res.data);
       }
     } catch (err) {
       postsContainer.innerHTML = '<div class="text-center py-10 text-error">Error al cargar publicaciones.</div>';
     }
+  }
+
+  function updateCategoryCounts(posts) {
+    // Count posts per category from current data
+    const counts = { tips: 0, health: 0, events: 0, search: 0 };
+    posts.forEach(p => {
+      if (counts[p.category] !== undefined) counts[p.category]++;
+    });
+    const total = posts.length;
+
+    // Update badges
+    const allBadge = document.querySelector('[data-cat-count="all"]');
+    if (allBadge) allBadge.textContent = total > 0 ? total : '';
+
+    Object.keys(counts).forEach(cat => {
+      const badge = document.querySelector(`[data-cat-count="${cat}"]`);
+      if (badge) badge.textContent = counts[cat] > 0 ? counts[cat] : '';
+    });
   }
 
   function attachPostEvents() {
@@ -378,6 +413,24 @@ export async function init() {
   document.getElementById('close-compose')?.addEventListener('click', closeCompose);
   document.getElementById('cancel-compose')?.addEventListener('click', closeCompose);
   document.getElementById('compose-backdrop')?.addEventListener('click', closeCompose);
+
+  // Quick question form
+  document.getElementById('quick-question-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!api.isLoggedIn()) {
+      window.PataMatch.toast('Debes iniciar sesión para preguntar', 'error');
+      return;
+    }
+    const input = document.getElementById('quick-question-input');
+    const question = input.value.trim();
+    if (!question) return;
+
+    // Pre-fill the compose modal with the question
+    openCompose();
+    const titleInput = document.getElementById('post-title');
+    if (titleInput) titleInput.value = question;
+    input.value = '';
+  });
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();

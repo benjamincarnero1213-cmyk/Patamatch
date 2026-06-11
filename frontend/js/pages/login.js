@@ -7,17 +7,18 @@ export function render() {
 
   return `
 <main class="min-h-screen grid grid-cols-1 md:grid-cols-2 overflow-hidden">
-  <!-- Image Side (Desktop) -->
-  <div class="hidden md:block relative h-full w-full overflow-hidden">
+  <!-- Image Side (Desktop) — Dynamic rotating backgrounds -->
+  <div class="hidden md:block relative h-full w-full overflow-hidden" id="login-image-side">
     <div class="absolute inset-0 bg-primary/10 mix-blend-multiply z-10"></div>
-    <img alt="Mujer feliz abrazando a su golden retriever" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6eZcnh3KOdgOwQEyYKyYmi78oBE3H-zSuyf2CN6P8Jcaoe6SQ5OK87D9IPx-SLZkIOaTL3FtWI8kRAFB8o0Mvi2L-f3GKGIq8_8WlVx_bFg8mt_GEwYmPjGjhl57AYqxFytnLxq8ezrXGGIfAsEevGNpn6cetEwqd98DwF2K_eMTgdFLsMWtyhQuZc257sZI4u9u1zoPbsb8mkRobM00AH19ImSS7-_d9q-R_tO3sgBF7od0DSpFCH7UdEjC1MZHTTnGFwxSfKTe3"/>
+    <!-- Image carousel -->
+    <img id="login-carousel-img" alt="Mascotas adoptadas felices en su nuevo hogar" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6eZcnh3KOdgOwQEyYKyYmi78oBE3H-zSuyf2CN6P8Jcaoe6SQ5OK87D9IPx-SLZkIOaTL3FtWI8kRAFB8o0Mvi2L-f3GKGIq8_8WlVx_bFg8mt_GEwYmPjGjhl57AYqxFytnLxq8ezrXGGIfAsEevGNpn6cetEwqd98DwF2K_eMTgdFLsMWtyhQuZc257sZI4u9u1zoPbsb8mkRobM00AH19ImSS7-_d9q-R_tO3sgBF7od0DSpFCH7UdEjC1MZHTTnGFwxSfKTe3"/>
     <div class="absolute bottom-12 left-12 z-20 max-w-md">
       <div class="flex items-center gap-2 mb-4">
         <span class="material-symbols-outlined text-on-primary bg-primary p-2 rounded-full" style="font-variation-settings: 'FILL' 1;">pets</span>
         <h1 class="font-headline-lg text-white drop-shadow-md">PataMatch</h1>
       </div>
-      <p class="font-headline-md text-white drop-shadow-md">
-        "Encontramos el amor en cada huella. Únete a nuestra comunidad hoy mismo."
+      <p id="login-carousel-text" class="font-headline-md text-white drop-shadow-md transition-opacity duration-500">
+        "¡Ellos ya iniciaron sesión en su nuevo hogar!"
       </p>
     </div>
   </div>
@@ -40,7 +41,12 @@ export function render() {
             Correo electrónico
           </label>
           <input class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline/50" id="login-email" placeholder="nombre@ejemplo.com" type="email" required/>
-          <p class="text-error text-xs hidden" id="login-email-error">Por favor ingresa un correo válido</p>
+          <p class="text-xs mt-1.5 hidden transition-all" id="login-email-error">
+            <span class="flex items-center gap-1 text-error">
+              <span class="material-symbols-outlined text-[14px]">error</span>
+              Por favor ingresa un correo válido (ej: nombre@ejemplo.com)
+            </span>
+          </p>
         </div>
         <div class="space-y-1.5">
           <div class="flex justify-between items-center">
@@ -185,9 +191,77 @@ export function init() {
       input.addEventListener('input', () => {
         input.classList.remove('border-error');
         const errorEl = input.parentElement.querySelector('.text-error') || 
-                        input.closest('.space-y-1\\.5')?.querySelector('.text-error');
+                        input.closest('.space-y-1\\.5')?.querySelector('[id$="-error"]');
         if (errorEl) errorEl.classList.add('hidden');
       });
     });
+
+    // Real-time email validation
+    const emailInput = document.getElementById('login-email');
+    const emailError = document.getElementById('login-email-error');
+    const emailRegexRT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function validateEmailRealtime() {
+      if (!emailInput.value) {
+        emailError.classList.add('hidden');
+        emailInput.classList.remove('border-error', 'border-primary/50');
+        return;
+      }
+      if (!emailRegexRT.test(emailInput.value)) {
+        emailError.classList.remove('hidden');
+        emailInput.classList.add('border-error');
+        emailInput.classList.remove('border-primary/50');
+      } else {
+        emailError.classList.add('hidden');
+        emailInput.classList.remove('border-error');
+        emailInput.classList.add('border-primary/50');
+      }
+    }
+
+    emailInput?.addEventListener('blur', validateEmailRealtime);
+    emailInput?.addEventListener('input', () => {
+      // Only validate on input if already showing error
+      if (!emailError.classList.contains('hidden')) {
+        validateEmailRealtime();
+      }
+    });
+  }
+
+  // Rotating carousel for login images
+  const carouselImg = document.getElementById('login-carousel-img');
+  const carouselText = document.getElementById('login-carousel-text');
+
+  if (carouselImg) {
+    const slides = [
+      {
+        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6eZcnh3KOdgOwQEyYKyYmi78oBE3H-zSuyf2CN6P8Jcaoe6SQ5OK87D9IPx-SLZkIOaTL3FtWI8kRAFB8o0Mvi2L-f3GKGIq8_8WlVx_bFg8mt_GEwYmPjGjhl57AYqxFytnLxq8ezrXGGIfAsEevGNpn6cetEwqd98DwF2K_eMTgdFLsMWtyhQuZc257sZI4u9u1zoPbsb8mkRobM00AH19ImSS7-_d9q-R_tO3sgBF7od0DSpFCH7UdEjC1MZHTTnGFwxSfKTe3',
+        text: '¡Ellos ya iniciaron sesión en su nuevo hogar!'
+      },
+      {
+        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDLAWwbh2dJqSbgMgyaN5rFfW_6-bV1ea_HuGUxb81ZgWgeQEISoCGRRbWA7PDSVJbTDtKQAp61EYoUJ3arOsaClVsN3ngM_Fx-ymhpEhJDAyllDFNCf6Ehu60ev1lIqfCqKdEH401V-glzTnHHRloTifD05r2xgxDsXw3VHcsIH2ovGTFcJ5MA7t_Y0FnC-QmFJtmArw7TcdgwbN7dI_Vae2S7OSwnZK6cqtsqKxUhus2ZTOVoyT82oUi92IUcRlikzwNfqB8wDco8',
+        text: 'Cada adopción es un nuevo comienzo lleno de amor.'
+      },
+      {
+        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBsv_-bz955vNS-tYr4oVaef0Z6_nafHn3UG0-V3szGOvTWx5iipBaWJDHxRIPZhJK_m5THdjoAmcdw1bhc7pix4hhtCfLnBOHo3iAEKUJvR74zpMbG6kSyHpqtL3Ivw1TG_8Cfk5kBAYwAaDNLlzyR8fcrP0HUtP0OJNPPd4mendTO8P-m7kfnkvBy08mxFPDm1aAkcBJt0gNmtoorUU_cBsOVhM1Zq7GQ26efg61BLInVDUkAxE0XRaMYIDfYC7A2xD62mCxkw7W8',
+        text: 'Más de 2,000 familias ya encontraron a su compañero ideal.'
+      }
+    ];
+
+    let slideIndex = 0;
+    const loginCarouselInterval = setInterval(() => {
+      slideIndex = (slideIndex + 1) % slides.length;
+      carouselImg.style.opacity = '0';
+      carouselText.style.opacity = '0';
+
+      setTimeout(() => {
+        carouselImg.src = slides[slideIndex].img;
+        carouselText.textContent = `"${slides[slideIndex].text}"`;
+        carouselImg.style.opacity = '1';
+        carouselText.style.opacity = '1';
+      }, 500);
+    }, 5000);
+
+    // Cleanup on navigation
+    window.addEventListener('hashchange', () => clearInterval(loginCarouselInterval), { once: true });
   }
 }

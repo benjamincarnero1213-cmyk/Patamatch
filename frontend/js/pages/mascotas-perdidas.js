@@ -26,24 +26,39 @@ function buildSidebarCard(pet) {
 }
 
 function buildMarkerHtml(pet) {
-  const size = pet.badge === 'Urgente' ? 'w-12 h-12' : 'w-10 h-10';
-  const ringClass = pet.badge === 'Urgente' ? 'bg-primary-container ring-4 ring-primary/20' : 'bg-surface-variant';
-  const petIconHtml = pet.badge === 'Urgente'
-    ? `<div class="absolute -bottom-1 -right-1 bg-primary text-white p-1 rounded-full border-2 border-white">
-         <span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1, 'wght' 400;">pets</span>
-       </div>`
-    : '';
+  // Determine urgency colors based on badge
+  const isUrgent = pet.badge === 'Urgente';
+  const size = isUrgent ? 'w-14 h-14' : 'w-12 h-12';
+  // Urgency-based border: Red = lost today/urgent, Yellow = seen days ago, Default = neutral
+  let borderColor = 'border-stone-300'; // default
+  let ringClass = '';
+  if (isUrgent) {
+    borderColor = 'border-red-500';
+    ringClass = 'ring-4 ring-red-500/20';
+  } else if (pet.last_seen && (pet.last_seen.includes('hoy') || pet.last_seen.includes('hora'))) {
+    borderColor = 'border-red-400';
+    ringClass = 'ring-2 ring-red-400/20';
+  } else {
+    borderColor = 'border-amber-400';
+    ringClass = 'ring-2 ring-amber-400/20';
+  }
 
   const markerImg = pet.marker_image || pet.image_url || 'https://via.placeholder.com/150';
   const markerLabel = `${pet.name} • ${pet.breed}`;
 
+  // Species icon overlay
+  const speciesIcon = (pet.breed || '').toLowerCase().includes('gato') || (pet.species || '').toLowerCase() === 'gato'
+    ? 'pets' : 'sound_detection_dog_barking';
+
   return `
     <div class="map-marker group cursor-pointer relative" data-marker-id="${pet.id}">
       <div class="relative">
-        <div class="${size} rounded-full border-4 border-white shadow-xl overflow-hidden ${ringClass}">
+        <div class="${size} rounded-full border-[3px] ${borderColor} shadow-xl overflow-hidden ${ringClass} bg-white">
           <img class="w-full h-full object-cover" src="${markerImg}" alt="${pet.name}" />
         </div>
-        ${petIconHtml}
+        <div class="absolute -bottom-1 -right-1 bg-white p-0.5 rounded-full shadow-md border ${borderColor}">
+          <span class="material-symbols-outlined text-[12px] ${isUrgent ? 'text-red-500' : 'text-amber-500'}" style="font-variation-settings: 'FILL' 1;">${speciesIcon}</span>
+        </div>
       </div>
       <div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity bg-surface px-3 py-1 rounded-lg shadow-xl whitespace-nowrap border border-outline-variant z-50">
         <p class="font-label-lg">${markerLabel}</p>
@@ -189,7 +204,7 @@ export async function init() {
   const updateText = document.getElementById('live-update-text');
   const mapInstructions = document.getElementById('map-instructions');
 
-  // Dynamically load Leaflet if it's not present (e.g. if the user didn't refresh the SPA)
+  // Dynamically load Leaflet and MarkerCluster if not present
   if (!window.L) {
     await new Promise((resolve) => {
       const link = document.createElement('link');
@@ -204,8 +219,44 @@ export async function init() {
     });
   }
 
+  // Load MarkerCluster plugin
+  if (!window.L.MarkerClusterGroup) {
+    await new Promise((resolve) => {
+      const mcCSS = document.createElement('link');
+      mcCSS.rel = 'stylesheet';
+      mcCSS.href = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css';
+      document.head.appendChild(mcCSS);
+
+      const mcDefaultCSS = document.createElement('link');
+      mcDefaultCSS.rel = 'stylesheet';
+      mcDefaultCSS.href = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css';
+      document.head.appendChild(mcDefaultCSS);
+
+      // Custom cluster styles
+      const clusterStyle = document.createElement('style');
+      clusterStyle.textContent = `
+        .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+          background: rgba(156, 62, 32, 0.15) !important;
+        }
+        .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+          background: #9c3e20 !important;
+          color: white !important;
+          font-weight: 700 !important;
+          font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+      `;
+      document.head.appendChild(clusterStyle);
+
+      const mcScript = document.createElement('script');
+      mcScript.src = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js';
+      mcScript.onload = resolve;
+      document.head.appendChild(mcScript);
+    });
+  }
+
   let leafletMap = null;
   let leafletMarkers = {};
+  let markerClusterGroup = null;
   let tempMarker = null;
   let selectedLat = null;
   let selectedLng = null;
@@ -217,6 +268,15 @@ export async function init() {
     attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
   }).addTo(leafletMap);
   L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
+
+  // Create cluster group
+  markerClusterGroup = L.markerClusterGroup({
+    maxClusterRadius: 50,
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true
+  });
+  leafletMap.addLayer(markerClusterGroup);
 
   // Fix for SPA: invalidate size after the container has been rendered to the screen
   setTimeout(() => {
@@ -234,14 +294,13 @@ export async function init() {
         petList.innerHTML = pets.map(p => buildSidebarCard(p)).join('');
         
         // Clear existing markers
-        Object.values(leafletMarkers).forEach(m => leafletMap.removeLayer(m));
+        markerClusterGroup.clearLayers();
         leafletMarkers = {};
 
         pets.forEach(pet => {
           let lat = parseFloat(pet.marker_top);
           let lng = parseFloat(pet.marker_left);
           if (isNaN(lat) || isNaN(lng)) {
-            // fallback to random spot near center if DB has old % values
             lat = 19.4326 + (Math.random() - 0.5) * 0.05;
             lng = -99.1332 + (Math.random() - 0.5) * 0.05;
           }
@@ -249,12 +308,13 @@ export async function init() {
           const icon = L.divIcon({
             className: 'custom-leaflet-icon',
             html: buildMarkerHtml(pet),
-            iconSize: [40, 40],
-            iconAnchor: [20, 20]
+            iconSize: [48, 48],
+            iconAnchor: [24, 24]
           });
 
-          const m = L.marker([lat, lng], { icon }).addTo(leafletMap);
+          const m = L.marker([lat, lng], { icon });
           m.on('click', () => setActivePet(pet.id.toString()));
+          markerClusterGroup.addLayer(m);
           leafletMarkers[pet.id] = m;
         });
         

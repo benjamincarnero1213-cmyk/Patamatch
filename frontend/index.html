@@ -119,6 +119,11 @@
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Timeline animation for carnet */
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
         /* Toast notification */
         .toast {
             animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -157,6 +162,22 @@
         /* Smooth scrollbar for custom areas */
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background-color: #ddc0b8; border-radius: 10px; }
+
+        /* ===== WCAG 2.1 Contrast Improvements ===== */
+        /* Ensure text-outline on light backgrounds meets 4.5:1 ratio */
+        .text-outline { color: #6b5b54 !important; }
+        /* Improve text-on-surface-variant contrast */
+        .text-on-surface-variant { color: #4a3e38 !important; }
+
+        /* ===== Hover Effects for Interactive Buttons ===== */
+        /* All primary buttons darken on hover for clear clickability */
+        .bg-primary:hover { filter: brightness(0.9); }
+        .bg-primary.active\:scale-\[0\.98\]:active { filter: brightness(0.85); }
+
+        /* Smooth focus ring for inputs */
+        input:focus, select:focus, textarea:focus {
+            box-shadow: 0 0 0 3px rgba(156, 62, 32, 0.1);
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed-dim selection:text-on-primary-fixed">

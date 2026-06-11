@@ -22,13 +22,27 @@ function buildCarnetHTML(carnet) {
     `;
   }).join('');
 
-  const historyHTML = carnet.medical_history.map(h => `
-    <div class="border-l-2 border-primary-fixed/30 pl-4 py-1">
-      <p class="text-xs font-bold text-primary-fixed mb-1">${h.date}</p>
-      <p class="font-bold mb-1">${h.title}</p>
-      <p class="text-sm text-primary-fixed/80">${h.notes || h.description || ''}</p>
+  // Timeline-based medical history instead of plain text blocks
+  const historyHTML = carnet.medical_history.map((h, i) => `
+    <div class="timeline-item relative flex gap-4 pb-8 group ${i === carnet.medical_history.length - 1 ? 'pb-0' : ''}" style="animation: fadeSlideIn 0.4s ease-out both; animation-delay: ${i * 0.1}s;">
+      <!-- Timeline connector -->
+      <div class="flex flex-col items-center flex-shrink-0">
+        <div class="w-3.5 h-3.5 rounded-full bg-primary-fixed border-2 border-primary-fixed-dim group-hover:scale-125 transition-transform z-10"></div>
+        ${i < carnet.medical_history.length - 1 ? '<div class="w-0.5 flex-1 bg-primary-fixed/30 mt-1"></div>' : ''}
+      </div>
+      <!-- Content -->
+      <div class="flex-1 -mt-1">
+        <span class="inline-block text-[11px] font-bold text-primary-fixed/70 uppercase tracking-widest mb-1">${h.date}</span>
+        <h5 class="font-bold text-white text-sm mb-1 group-hover:text-primary-fixed transition-colors">${h.title}</h5>
+        <p class="text-sm text-primary-fixed/80 leading-relaxed">${h.notes || h.description || ''}</p>
+      </div>
     </div>
   `).join('');
+
+  // Determine last vet validation date
+  const lastValidation = carnet.medical_history && carnet.medical_history.length > 0
+    ? carnet.medical_history[carnet.medical_history.length - 1].date
+    : 'No disponible';
 
   return `
   <div class="mb-12 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -42,10 +56,36 @@ function buildCarnetHTML(carnet) {
         <span class="material-symbols-outlined">download</span>
         Descargar PDF
       </button>
-      <button id="share-id" class="flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary hover:opacity-90 transition-all active:scale-[0.98] font-label-lg text-label-lg shadow-lg">
-        <span class="material-symbols-outlined">share</span>
-        Compartir ID
-      </button>
+      <div class="relative">
+        <button id="share-id" class="flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary hover:opacity-90 transition-all active:scale-[0.98] font-label-lg text-label-lg shadow-lg">
+          <span class="material-symbols-outlined">share</span>
+          Compartir ID
+        </button>
+        <!-- Share options dropdown -->
+        <div id="share-dropdown" class="hidden absolute right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-stone-100 p-2 min-w-[260px] z-50 animate-[fadeSlideIn_0.2s_ease-out]">
+          <button class="share-option flex items-center gap-3 w-full px-4 py-3 text-sm text-stone-700 hover:bg-orange-50 rounded-lg transition-colors text-left" data-action="copy-link">
+            <span class="material-symbols-outlined text-primary text-[20px]">link</span>
+            <div>
+              <p class="font-semibold text-stone-800">Copiar enlace público</p>
+              <p class="text-[11px] text-stone-400">Cualquiera con el enlace podrá verlo</p>
+            </div>
+          </button>
+          <button class="share-option flex items-center gap-3 w-full px-4 py-3 text-sm text-stone-700 hover:bg-orange-50 rounded-lg transition-colors text-left" data-action="download-vet">
+            <span class="material-symbols-outlined text-primary text-[20px]">local_hospital</span>
+            <div>
+              <p class="font-semibold text-stone-800">Descargar PDF para Veterinaria</p>
+              <p class="text-[11px] text-stone-400">Formato oficial con historial completo</p>
+            </div>
+          </button>
+          <button class="share-option flex items-center gap-3 w-full px-4 py-3 text-sm text-stone-700 hover:bg-orange-50 rounded-lg transition-colors text-left" data-action="send-adopter">
+            <span class="material-symbols-outlined text-primary text-[20px]">send</span>
+            <div>
+              <p class="font-semibold text-stone-800">Enviar a un Adoptante</p>
+              <p class="text-[11px] text-stone-400">Compartir directamente por mensaje</p>
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -96,9 +136,21 @@ function buildCarnetHTML(carnet) {
                 <p class="font-bold text-on-surface">${carnet.species}</p>
               </div>
             </div>
-            <div class="bg-secondary-fixed px-4 py-2 rounded-full flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-secondary"></span>
-              <span class="text-on-secondary-fixed-variant text-xs font-bold uppercase tracking-wider">Salud Certificada</span>
+            <!-- Health badge with tooltip -->
+            <div class="relative group cursor-help">
+              <div class="bg-secondary-fixed px-4 py-2 rounded-full flex items-center gap-2 transition-all group-hover:shadow-md group-hover:ring-2 group-hover:ring-secondary/20">
+                <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                <span class="text-on-secondary-fixed-variant text-xs font-bold uppercase tracking-wider">Salud Certificada</span>
+              </div>
+              <!-- Tooltip -->
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50">
+                <div class="bg-stone-800 text-white px-4 py-3 rounded-xl shadow-xl text-xs whitespace-nowrap">
+                  <p class="font-bold mb-1">✅ Salud verificada</p>
+                  <p class="text-stone-300">Última validación: <span class="text-white font-semibold">${lastValidation}</span></p>
+                  <p class="text-stone-300">Veterinario: <span class="text-white font-semibold">${carnet.vet_name || 'N/A'}</span></p>
+                  <div class="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-transparent border-t-stone-800"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -152,13 +204,13 @@ function buildCarnetHTML(carnet) {
         </div>
       </div>
       
-      <!-- Medical History -->
+      <!-- Medical History Timeline -->
       <div class="bg-primary text-white rounded-3xl p-8 shadow-xl">
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center justify-between mb-8">
           <h4 class="font-label-lg text-label-lg text-primary-fixed uppercase tracking-widest">Historial Médico</h4>
           <span class="material-symbols-outlined">history_edu</span>
         </div>
-        <div class="space-y-6">
+        <div class="space-y-0">
           ${historyHTML}
         </div>
       </div>
@@ -217,15 +269,43 @@ export async function init() {
       window.PataMatch.toast('Descargando PDF del carnet...', 'info');
     });
 
-    document.getElementById('share-id')?.addEventListener('click', () => {
-      const fakeUrl = 'https://patamatch.com/id/share-link';
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(fakeUrl).then(() => {
-          window.PataMatch.toast('¡Enlace copiado al portapapeles!', 'success');
-        });
-      } else {
-        window.PataMatch.toast('¡Enlace copiado al portapapeles!', 'success');
-      }
+    // Share button — toggle dropdown
+    const shareBtn = document.getElementById('share-id');
+    const shareDropdown = document.getElementById('share-dropdown');
+    
+    shareBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      shareDropdown.classList.toggle('hidden');
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', () => {
+      shareDropdown?.classList.add('hidden');
+    });
+    shareDropdown?.addEventListener('click', (e) => e.stopPropagation());
+
+    // Share option actions
+    document.querySelectorAll('.share-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.getAttribute('data-action');
+        shareDropdown.classList.add('hidden');
+
+        if (action === 'copy-link') {
+          const fakeUrl = 'https://patamatch.com/id/share-link';
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(fakeUrl).then(() => {
+              window.PataMatch.toast('¡Enlace copiado al portapapeles!', 'success');
+            });
+          } else {
+            window.PataMatch.toast('¡Enlace copiado al portapapeles!', 'success');
+          }
+        } else if (action === 'download-vet') {
+          window.PataMatch.toast('Generando PDF veterinario...', 'info');
+        } else if (action === 'send-adopter') {
+          window.PataMatch.toast('Redirigiendo al chat...', 'info');
+          window.location.hash = 'chats';
+        }
+      });
     });
   }
 }

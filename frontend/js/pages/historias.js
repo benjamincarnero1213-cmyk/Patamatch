@@ -135,10 +135,26 @@ export function render() {
 
   <!-- Stories Grid -->
   <section class="mb-20">
-    <div class="flex justify-between items-end mb-10">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-10">
       <div>
         <h2 class="font-headline-lg text-on-surface mb-2">Casos de Éxito</h2>
         <p class="text-on-surface-variant">Relatos reales de resiliencia, amor y nuevos comienzos.</p>
+      </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-3 mb-8" id="story-filters">
+      <button class="story-filter-btn px-4 py-2 rounded-full bg-primary text-on-primary text-sm font-semibold transition-all active:scale-95" data-filter-species="all">Todas</button>
+      <button class="story-filter-btn px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant text-sm font-semibold hover:border-primary hover:text-primary transition-all active:scale-95" data-filter-species="Perro">
+        <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">sound_detection_dog_barking</span> Perros</span>
+      </button>
+      <button class="story-filter-btn px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant text-sm font-semibold hover:border-primary hover:text-primary transition-all active:scale-95" data-filter-species="Gato">
+        <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">pets</span> Gatos</span>
+      </button>
+      <div class="h-8 w-px bg-outline-variant mx-1 hidden md:block"></div>
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">location_on</span>
+        <input id="story-filter-region" type="text" class="pl-9 pr-4 py-2 rounded-full border border-outline-variant text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-surface w-40" placeholder="Ciudad o región..." />
       </div>
     </div>
     
@@ -192,7 +208,7 @@ export function render() {
         </div>
         <div class="space-y-2">
           <label class="font-label-lg block text-on-surface-variant">Cuéntanos tu historia</label>
-          <textarea id="story-body" class="w-full bg-surface-container-low border-outline rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="¿Cómo se conocieron? ¿Qué ha cambiado desde que llegó a casa?" rows="4" required></textarea>
+          <textarea id="story-body" class="w-full bg-surface-container-low border-outline rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="¿Cómo se conocieron? ¿Qué es lo que más le gusta hacer? ¿Cómo ha cambiado tu vida desde que llegó a casa? ¿Qué consejo darías a quienes están pensando en adoptar?" rows="4" required></textarea>
         </div>
         <div class="flex flex-col md:flex-row gap-4 items-center">
           <button class="w-full md:w-auto bg-primary text-on-primary px-10 py-3 rounded-lg font-label-lg shadow-md active:scale-95 transition-transform" type="submit">Enviar Historia</button>
@@ -270,6 +286,38 @@ export async function init() {
     }
   });
 
+  // Species & region filters
+  let filterSpecies = 'all';
+  let filterRegion = '';
+
+  document.querySelectorAll('.story-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.story-filter-btn').forEach(b => {
+        b.classList.remove('bg-primary', 'text-on-primary');
+        b.classList.add('border', 'border-outline-variant', 'text-on-surface-variant');
+      });
+      btn.classList.add('bg-primary', 'text-on-primary');
+      btn.classList.remove('border', 'border-outline-variant', 'text-on-surface-variant');
+      filterSpecies = btn.getAttribute('data-filter-species');
+      applyFilters();
+    });
+  });
+
+  document.getElementById('story-filter-region')?.addEventListener('input', (e) => {
+    filterRegion = e.target.value.toLowerCase().trim();
+    applyFilters();
+  });
+
+  function applyFilters() {
+    const cards = grid.querySelectorAll('article');
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      const speciesMatch = filterSpecies === 'all' || text.includes(filterSpecies.toLowerCase());
+      const regionMatch = !filterRegion || text.includes(filterRegion);
+      card.style.display = speciesMatch && regionMatch ? '' : 'none';
+    });
+  }
+
   // --- Local Image Upload & Preview ---
   let storyImageBase64 = '';
   const fileInput = document.getElementById('story-img-file');
@@ -306,6 +354,48 @@ export async function init() {
     previewContainer.classList.add('hidden');
     placeholder.classList.remove('hidden');
   });
+
+  // Drag & Drop support
+  const dropZone = document.getElementById('story-img-container');
+  if (dropZone) {
+    ['dragenter', 'dragover'].forEach(evName => {
+      dropZone.addEventListener(evName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('border-primary', 'bg-primary-fixed/10');
+        dropZone.classList.remove('border-outline-variant');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(evName => {
+      dropZone.addEventListener(evName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('border-primary', 'bg-primary-fixed/10');
+        dropZone.classList.add('border-outline-variant');
+      });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        if (file.size > 5 * 1024 * 1024) {
+          window.PataMatch.toast('La imagen no debe superar los 5MB', 'error');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          storyImageBase64 = event.target.result;
+          previewImg.src = storyImageBase64;
+          previewContainer.classList.remove('hidden');
+          placeholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      } else {
+        window.PataMatch.toast('Solo se permiten archivos de imagen', 'error');
+      }
+    });
+  }
 
   // Story Form Submission
   const form = document.getElementById('story-form');

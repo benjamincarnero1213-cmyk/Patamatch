@@ -18,10 +18,11 @@ function buildPetCard(pet) {
         </button>
       </div>
       <div class="p-6">
-        <div class="flex justify-between items-start mb-2">
+        <div class="flex justify-between items-start mb-1">
           <h3 class="font-headline-md text-on-surface">${pet.name}</h3>
           <span class="px-2 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded uppercase">${pet.species}</span>
         </div>
+        <p class="text-sm text-on-surface-variant italic mb-3 line-clamp-1">${pet.description || (pet.species === 'Gato' ? 'Independiente y cariñoso' : 'Juguetón y muy cariñoso')}</p>
         <div class="flex flex-wrap gap-2 mb-4">
           <span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-medium text-on-surface-variant flex items-center gap-1">
             <span class="material-symbols-outlined text-sm">event</span> ${pet.age}
@@ -34,8 +35,9 @@ function buildPetCard(pet) {
           <span class="material-symbols-outlined text-base">location_on</span>
           ${pet.location}
         </div>
-        <button class="adopt-btn w-full py-3 bg-primary text-on-primary font-label-lg rounded-xl hover:bg-primary-container transition-all shadow-sm" data-pet-id="${pet.id}" data-pet-name="${pet.name}">
-          Adoptar a ${pet.name}
+        <button class="adopt-btn w-full py-3 bg-primary text-on-primary font-label-lg rounded-xl hover:bg-primary-container transition-all shadow-sm flex items-center justify-center gap-2" data-pet-id="${pet.id}" data-pet-name="${pet.name}">
+          <span class="material-symbols-outlined text-[18px]">pets</span>
+          Conoce a ${pet.name}
         </button>
       </div>
     </div>`;
@@ -181,6 +183,51 @@ export function render() {
     </div>
   </section>
 
+  <!-- Advanced Filters (collapsible) -->
+  <section id="advanced-filters-section" class="mb-8 overflow-hidden transition-all duration-300" style="max-height: 0;">
+    <div class="bg-surface-container-low rounded-2xl p-6 border border-outline-variant/30 shadow-sm">
+      <h4 class="font-label-lg text-on-surface-variant mb-4 flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[18px]">tune</span>
+        Filtros de comportamiento
+      </h4>
+      <div class="flex flex-wrap gap-3">
+        <label class="adv-filter-chip flex items-center gap-2 px-4 py-2.5 rounded-full border border-outline-variant bg-surface cursor-pointer hover:border-primary hover:bg-primary-fixed/30 transition-all text-sm font-medium text-on-surface-variant has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:border-primary">
+          <input type="checkbox" class="hidden" data-adv-filter="apartment" />
+          <span class="material-symbols-outlined text-[16px]">apartment</span>
+          Apto para departamentos
+        </label>
+        <label class="adv-filter-chip flex items-center gap-2 px-4 py-2.5 rounded-full border border-outline-variant bg-surface cursor-pointer hover:border-primary hover:bg-primary-fixed/30 transition-all text-sm font-medium text-on-surface-variant has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:border-primary">
+          <input type="checkbox" class="hidden" data-adv-filter="kids" />
+          <span class="material-symbols-outlined text-[16px]">child_care</span>
+          Se lleva bien con niños
+        </label>
+        <label class="adv-filter-chip flex items-center gap-2 px-4 py-2.5 rounded-full border border-outline-variant bg-surface cursor-pointer hover:border-primary hover:bg-primary-fixed/30 transition-all text-sm font-medium text-on-surface-variant has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:border-primary">
+          <input type="checkbox" class="hidden" data-adv-filter="energy-low" />
+          <span class="material-symbols-outlined text-[16px]">self_improvement</span>
+          Energía Baja
+        </label>
+        <label class="adv-filter-chip flex items-center gap-2 px-4 py-2.5 rounded-full border border-outline-variant bg-surface cursor-pointer hover:border-primary hover:bg-primary-fixed/30 transition-all text-sm font-medium text-on-surface-variant has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:border-primary">
+          <input type="checkbox" class="hidden" data-adv-filter="energy-mid" />
+          <span class="material-symbols-outlined text-[16px]">directions_walk</span>
+          Energía Media
+        </label>
+        <label class="adv-filter-chip flex items-center gap-2 px-4 py-2.5 rounded-full border border-outline-variant bg-surface cursor-pointer hover:border-primary hover:bg-primary-fixed/30 transition-all text-sm font-medium text-on-surface-variant has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:border-primary">
+          <input type="checkbox" class="hidden" data-adv-filter="energy-high" />
+          <span class="material-symbols-outlined text-[16px]">directions_run</span>
+          Energía Alta
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <div class="flex justify-end mb-4">
+    <button id="toggle-adv-filters" class="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-container transition-colors">
+      <span class="material-symbols-outlined text-[18px]">tune</span>
+      <span id="toggle-adv-text">Mostrar filtros avanzados</span>
+      <span class="material-symbols-outlined text-[18px] transition-transform" id="toggle-adv-icon">expand_more</span>
+    </button>
+  </div>
+
   <!-- Pet Grid -->
   <div id="pet-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
     <!-- Carga de datos desde API... -->
@@ -287,6 +334,26 @@ export async function init() {
   document.getElementById('filter-search-btn')?.addEventListener('click', loadPets);
   document.getElementById('filter-species')?.addEventListener('change', loadPets);
   document.getElementById('filter-size')?.addEventListener('change', loadPets);
+
+  // Advanced filters toggle
+  const advSection = document.getElementById('advanced-filters-section');
+  const advToggle = document.getElementById('toggle-adv-filters');
+  const advText = document.getElementById('toggle-adv-text');
+  const advIcon = document.getElementById('toggle-adv-icon');
+  let advOpen = false;
+
+  advToggle?.addEventListener('click', () => {
+    advOpen = !advOpen;
+    if (advOpen) {
+      advSection.style.maxHeight = advSection.scrollHeight + 'px';
+      advText.textContent = 'Ocultar filtros avanzados';
+      advIcon.style.transform = 'rotate(180deg)';
+    } else {
+      advSection.style.maxHeight = '0';
+      advText.textContent = 'Mostrar filtros avanzados';
+      advIcon.style.transform = 'rotate(0)';
+    }
+  });
 
   // Publish Modal
   const publishBtn = document.getElementById('btn-publish-pet');
