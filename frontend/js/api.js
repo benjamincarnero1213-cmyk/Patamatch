@@ -177,3 +177,30 @@ export async function getCarnets() {
 export async function getCarnet(id) {
   return request('GET', `/carnets/${id}`);
 }
+
+// ========== Chats ==========
+export async function getChats() {
+  return request('GET', '/chats');
+}
+
+export async function getChatMessages(chatId) {
+  return request('GET', `/chats/${chatId}/messages`);
+}
+
+export async function sendChatMessage(chatId, body) {
+  return request('POST', `/chats/${chatId}/messages`, { body });
+}
+
+// ========== Notifications ==========
+export async function getNotifications() {
+  return request('GET', '/notifications');
+}
+
+export async function markNotificationRead(id) {
+  return request('PUT', `/notifications/${id}/read`);
+}
+
+export async function markAllNotificationsRead() {
+  return request('PUT', '/notifications/read-all');
+}
+

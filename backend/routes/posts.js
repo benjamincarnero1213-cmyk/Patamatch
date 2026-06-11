@@ -3,7 +3,7 @@ const { queryAll, queryOne, runQuery } = require('../db/database');
 const { requireAuth, optionalAuth } = require('../middleware/auth');
 
 // GET / — list posts with author info, like counts, optional filtering/sorting
-router.get('/', optionalAuth, (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const { category, sort = 'recent' } = req.query;
     const conditions = [];
@@ -32,10 +32,10 @@ router.get('/', optionalAuth, (req, res) => {
       ${orderClause}
     `;
 
-    const posts = queryAll(sql, params);
+    const posts = await queryAll(sql, params);
 
     if (req.user) {
-      const userLikes = queryAll('SELECT post_id FROM post_likes WHERE user_id = ?', [req.user.id]);
+      const userLikes = await queryAll('SELECT post_id FROM post_likes WHERE user_id = ?', [req.user.id]);
       const likedSet = new Set(userLikes.map(l => l.post_id));
       posts.forEach(post => {
         post.is_liked = likedSet.has(post.id);
@@ -50,7 +50,7 @@ router.get('/', optionalAuth, (req, res) => {
 });
 
 // POST / — create post
-router.post('/', requireAuth, (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { title, body, category, tags } = req.body;
 
@@ -60,12 +60,12 @@ router.post('/', requireAuth, (req, res) => {
 
     const tagsValue = Array.isArray(tags) ? JSON.stringify(tags) : (tags || null);
 
-    const result = runQuery(
+    const result = await runQuery(
       'INSERT INTO posts (title, body, category, tags, user_id) VALUES (?, ?, ?, ?, ?)',
       [title, body, category || null, tagsValue, req.user.id]
     );
 
-    const post = queryOne('SELECT * FROM posts WHERE id = ?', [result.lastInsertRowid]);
+    const post = await queryOne('SELECT * FROM posts WHERE id = ?', [result.lastInsertRowid]);
     res.status(201).json({ success: true, data: post });
   } catch (err) {
     console.error('Create post error:', err);
@@ -74,30 +74,30 @@ router.post('/', requireAuth, (req, res) => {
 });
 
 // POST /:id/like — toggle like
-router.post('/:id/like', requireAuth, (req, res) => {
+router.post('/:id/like', requireAuth, async (req, res) => {
   try {
     const postId = req.params.id;
 
-    const post = queryOne('SELECT id FROM posts WHERE id = ?', [postId]);
+    const post = await queryOne('SELECT id FROM posts WHERE id = ?', [postId]);
     if (!post) {
       return res.status(404).json({ success: false, error: 'Post not found' });
     }
 
-    const existingLike = queryOne(
+    const existingLike = await queryOne(
       'SELECT id FROM post_likes WHERE post_id = ? AND user_id = ?',
       [postId, req.user.id]
     );
 
     let is_liked;
     if (existingLike) {
-      runQuery('DELETE FROM post_likes WHERE id = ?', [existingLike.id]);
+      await runQuery('DELETE FROM post_likes WHERE id = ?', [existingLike.id]);
       is_liked = false;
     } else {
-      runQuery('INSERT INTO post_likes (post_id, user_id) VALUES (?, ?)', [postId, req.user.id]);
+      await runQuery('INSERT INTO post_likes (post_id, user_id) VALUES (?, ?)', [postId, req.user.id]);
       is_liked = true;
     }
 
-    const countRow = queryOne('SELECT COUNT(*) AS like_count FROM post_likes WHERE post_id = ?', [postId]);
+    const countRow = await queryOne('SELECT COUNT(*) AS like_count FROM post_likes WHERE post_id = ?', [postId]);
     res.json({ success: true, data: { like_count: countRow.like_count, is_liked } });
   } catch (err) {
     console.error('Toggle like error:', err);
@@ -106,7 +106,7 @@ router.post('/:id/like', requireAuth, (req, res) => {
 });
 
 // GET /:id/comments — list comments
-router.get('/:id/comments', (req, res) => {
+router.get('/:id/comments', async (req, res) => {
   try {
     const postId = req.params.id;
     const sql = `
@@ -116,7 +116,7 @@ router.get('/:id/comments', (req, res) => {
       WHERE c.post_id = ? 
       ORDER BY c.created_at ASC
     `;
-    const comments = queryAll(sql, [postId]);
+    const comments = await queryAll(sql, [postId]);
     res.json({ success: true, data: comments });
   } catch (err) {
     console.error('List comments error:', err);
@@ -125,7 +125,7 @@ router.get('/:id/comments', (req, res) => {
 });
 
 // POST /:id/comments — add a comment
-router.post('/:id/comments', requireAuth, (req, res) => {
+router.post('/:id/comments', requireAuth, async (req, res) => {
   try {
     const postId = req.params.id;
     const { body } = req.body;
@@ -134,12 +134,12 @@ router.post('/:id/comments', requireAuth, (req, res) => {
       return res.status(400).json({ success: false, error: 'El contenido del comentario es requerido' });
     }
 
-    const result = runQuery(
+    const result = await runQuery(
       'INSERT INTO post_comments (post_id, user_id, body) VALUES (?, ?, ?)',
       [postId, req.user.id, body]
     );
 
-    const comment = queryOne(
+    const comment = await queryOne(
       `SELECT c.*, u.name AS author_name 
        FROM post_comments c 
        LEFT JOIN users u ON c.user_id = u.id 

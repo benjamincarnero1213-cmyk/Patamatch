@@ -3,9 +3,9 @@ const { queryAll, queryOne, runQuery } = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
 
 // GET / — list user's favorite pet IDs
-router.get('/', requireAuth, (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
-    const favorites = queryAll('SELECT pet_id FROM favorites WHERE user_id = ?', [req.user.id]);
+    const favorites = await queryAll('SELECT pet_id FROM favorites WHERE user_id = ?', [req.user.id]);
     const petIds = favorites.map(f => f.pet_id);
 
     res.json({ success: true, data: petIds });
@@ -16,21 +16,21 @@ router.get('/', requireAuth, (req, res) => {
 });
 
 // POST /:petId — toggle favorite
-router.post('/:petId', requireAuth, (req, res) => {
+router.post('/:petId', requireAuth, async (req, res) => {
   try {
     const petId = req.params.petId;
 
-    const existing = queryOne(
+    const existing = await queryOne(
       'SELECT id FROM favorites WHERE user_id = ? AND pet_id = ?',
       [req.user.id, petId]
     );
 
     let is_favorite;
     if (existing) {
-      runQuery('DELETE FROM favorites WHERE id = ?', [existing.id]);
+      await runQuery('DELETE FROM favorites WHERE id = ?', [existing.id]);
       is_favorite = false;
     } else {
-      runQuery('INSERT INTO favorites (user_id, pet_id) VALUES (?, ?)', [req.user.id, petId]);
+      await runQuery('INSERT INTO favorites (user_id, pet_id) VALUES (?, ?)', [req.user.id, petId]);
       is_favorite = true;
     }
 

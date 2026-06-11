@@ -3,11 +3,11 @@ const { queryAll, queryOne, runQuery } = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
 
 // GET / — list lost pets (not yet found)
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { limit = 20 } = req.query;
 
-    const pets = queryAll(
+    const pets = await queryAll(
       'SELECT * FROM lost_pets WHERE is_found = 0 ORDER BY created_at DESC LIMIT ?',
       [Number(limit)]
     );
@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
 });
 
 // POST / — report a lost pet
-router.post('/', requireAuth, (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { name, breed, location, description, image_url, lat, lng } = req.body;
 
@@ -28,12 +28,12 @@ router.post('/', requireAuth, (req, res) => {
       return res.status(400).json({ success: false, error: 'Name and location are required' });
     }
 
-    const result = runQuery(
+    const result = await runQuery(
       'INSERT INTO lost_pets (name, breed, location, description, image_url, marker_top, marker_left, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [name, breed || null, location, description || null, image_url || null, lat || '19.4326', lng || '-99.1332', req.user.id]
     );
 
-    const lostPet = queryOne('SELECT * FROM lost_pets WHERE id = ?', [result.lastInsertRowid]);
+    const lostPet = await queryOne('SELECT * FROM lost_pets WHERE id = ?', [result.lastInsertRowid]);
     res.status(201).json({ success: true, data: lostPet });
   } catch (err) {
     console.error('Report lost pet error:', err);
@@ -42,16 +42,16 @@ router.post('/', requireAuth, (req, res) => {
 });
 
 // PUT /:id/found — mark lost pet as found
-router.put('/:id/found', requireAuth, (req, res) => {
+router.put('/:id/found', requireAuth, async (req, res) => {
   try {
-    const pet = queryOne('SELECT * FROM lost_pets WHERE id = ?', [req.params.id]);
+    const pet = await queryOne('SELECT * FROM lost_pets WHERE id = ?', [req.params.id]);
     if (!pet) {
       return res.status(404).json({ success: false, error: 'Lost pet report not found' });
     }
 
-    runQuery('UPDATE lost_pets SET is_found = 1 WHERE id = ?', [req.params.id]);
+    await runQuery('UPDATE lost_pets SET is_found = 1 WHERE id = ?', [req.params.id]);
 
-    const updated = queryOne('SELECT * FROM lost_pets WHERE id = ?', [req.params.id]);
+    const updated = await queryOne('SELECT * FROM lost_pets WHERE id = ?', [req.params.id]);
     res.json({ success: true, data: updated });
   } catch (err) {
     console.error('Mark found error:', err);

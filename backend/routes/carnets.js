@@ -3,9 +3,9 @@ const { queryAll, queryOne } = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
 
 // GET / — list user's carnets
-router.get('/', requireAuth, (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
-    const carnets = queryAll('SELECT * FROM carnets WHERE user_id = ? ORDER BY created_at DESC', [req.user.id]);
+    const carnets = await queryAll('SELECT * FROM carnets WHERE user_id = ? ORDER BY created_at DESC', [req.user.id]);
     
     // Parse JSON fields if they are stored as strings
     for (const carnet of carnets) {
@@ -25,9 +25,9 @@ router.get('/', requireAuth, (req, res) => {
 });
 
 // GET /:id — get carnet detail (public)
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const carnet = queryOne('SELECT * FROM carnets WHERE id = ?', [req.params.id]);
+    const carnet = await queryOne('SELECT * FROM carnets WHERE id = ?', [req.params.id]);
     if (!carnet) {
       return res.status(404).json({ success: false, error: 'Carnet not found' });
     }

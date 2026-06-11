@@ -181,7 +181,27 @@
             </div>
             <!-- User menu (shown when logged in) -->
             <div id="user-menu" class="hidden flex items-center gap-3">
-                <span class="material-symbols-outlined text-stone-600 cursor-pointer hover:text-[#D96C4A] p-2 hover:bg-orange-50 rounded-full transition-colors">notifications</span>
+                
+                <!-- Notifications -->
+                <div class="relative group">
+                    <div id="notif-trigger" class="relative cursor-pointer p-2 rounded-full hover:bg-orange-50 transition-colors flex items-center justify-center">
+                        <span class="material-symbols-outlined text-stone-600">notifications</span>
+                        <span id="notif-badge" class="hidden absolute top-1 right-1 bg-error text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                    </div>
+                    <div class="absolute right-0 top-full pt-2 hidden group-hover:block z-50">
+                        <div class="bg-white rounded-xl shadow-xl border border-stone-100 p-0 min-w-[320px] max-h-[400px] flex flex-col overflow-hidden">
+                            <div class="p-3 border-b border-stone-100 flex justify-between items-center bg-stone-50">
+                                <h4 class="font-bold text-sm text-stone-800">Notificaciones</h4>
+                                <button id="mark-all-read-btn" class="text-xs text-primary hover:underline">Marcar leídas</button>
+                            </div>
+                            <div id="notif-list" class="overflow-y-auto custom-scroll flex-1 p-2 flex flex-col gap-1">
+                                <!-- Notifications injected here -->
+                                <div class="p-4 text-center text-xs text-stone-500">Sin notificaciones</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="relative group">
                     <div id="user-avatar-trigger" class="cursor-pointer p-1 rounded-full hover:bg-orange-50 transition-colors flex items-center justify-center">
                         <span class="material-symbols-outlined text-stone-600">account_circle</span>
@@ -191,6 +211,10 @@
                             <a href="#perfil" class="flex items-center gap-3 px-4 py-3 text-sm text-stone-600 hover:bg-orange-50 rounded-lg transition-colors">
                                 <span class="material-symbols-outlined text-[18px]">person</span>
                                 Mi Perfil
+                            </a>
+                            <a href="#chats" class="flex items-center gap-3 px-4 py-3 text-sm text-stone-600 hover:bg-orange-50 rounded-lg transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">chat</span>
+                                Mis Chats
                             </a>
                             <a href="#carnet" class="flex items-center gap-3 px-4 py-3 text-sm text-stone-600 hover:bg-orange-50 rounded-lg transition-colors">
                                 <span class="material-symbols-outlined text-[18px]">badge</span>
@@ -411,10 +435,12 @@
             } else {
                 avatarTrigger.innerHTML = `<span class="material-symbols-outlined text-stone-600">account_circle</span>`;
             }
+            if (typeof startNotificationsPolling === 'function') startNotificationsPolling();
         } else {
             authButtons.classList.remove('hidden');
             userMenu.classList.add('hidden');
             userMenu.classList.remove('flex');
+            if (typeof stopNotificationsPolling === 'function') stopNotificationsPolling();
         }
     }
 
@@ -451,10 +477,80 @@
     // ========== Initialize ==========
     window.addEventListener('hashchange', navigate);
     
+    // ========== Notifications Logic ==========
+    let notifInterval;
+    
+    async function loadNotifications() {
+        if (!api.isLoggedIn()) return;
+        try {
+            const res = await api.getNotifications();
+            if (res.success) {
+                const list = document.getElementById('notif-list');
+                const badge = document.getElementById('notif-badge');
+                const notifs = res.data;
+                const unreadCount = notifs.filter(n => !n.is_read).length;
+                
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+                
+                if (notifs.length === 0) {
+                    list.innerHTML = '<div class="p-4 text-center text-xs text-stone-500">Sin notificaciones</div>';
+                    return;
+                }
+                
+                list.innerHTML = notifs.map(n => `
+                    <div class="p-3 rounded-lg hover:bg-orange-50 transition-colors cursor-pointer border border-transparent hover:border-orange-100 ${n.is_read ? 'opacity-70' : 'bg-orange-50/50'}" data-notif-id="${n.id}">
+                        <p class="text-xs text-stone-800 ${n.is_read ? '' : 'font-semibold'}">${n.text}</p>
+                        <p class="text-[10px] text-stone-400 mt-1">${new Date(n.created_at).toLocaleString()}</p>
+                    </div>
+                `).join('');
+                
+                // Add click events to notifications
+                list.querySelectorAll('[data-notif-id]').forEach(el => {
+                    el.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const id = el.getAttribute('data-notif-id');
+                        await api.markNotificationRead(id);
+                        window.location.hash = 'chats';
+                        loadNotifications();
+                    });
+                });
+            }
+        } catch (err) {
+            console.error('Failed to load notifications:', err);
+        }
+    }
+
+    document.getElementById('mark-all-read-btn')?.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!api.isLoggedIn()) return;
+        try {
+            await api.markAllNotificationsRead();
+            loadNotifications();
+        } catch (err) {
+            console.error(err);
+        }
+    });
+
+    function startNotificationsPolling() {
+        if (notifInterval) clearInterval(notifInterval);
+        loadNotifications();
+        notifInterval = setInterval(loadNotifications, 10000); // Check every 10 seconds
+    }
+    
+    function stopNotificationsPolling() {
+        if (notifInterval) clearInterval(notifInterval);
+    }
+    
     // Check for saved auth state
     if (api.isLoggedIn()) {
         window.PataMatch.user = api.getUser();
         updateAuthUI();
+        startNotificationsPolling();
         // Verify token is still valid
         api.getMe().then(res => {
             if (res.success) {
@@ -465,6 +561,7 @@
             api.logout();
             window.PataMatch.user = null;
             updateAuthUI();
+            stopNotificationsPolling();
         });
     }
     

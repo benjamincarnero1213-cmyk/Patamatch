@@ -3,11 +3,11 @@ const { queryAll, queryOne, runQuery } = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
 
 // GET / — list approved stories
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { limit = 20, offset = 0 } = req.query;
 
-    const stories = queryAll(
+    const stories = await queryAll(
       'SELECT * FROM stories WHERE is_approved = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?',
       [Number(limit), Number(offset)]
     );
@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
 });
 
 // POST / — submit a story (pending approval)
-router.post('/', requireAuth, (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { pet_name, author_name, title, body, image_url } = req.body;
 
@@ -28,12 +28,12 @@ router.post('/', requireAuth, (req, res) => {
       return res.status(400).json({ success: false, error: 'Title and body are required' });
     }
 
-    const result = runQuery(
+    const result = await runQuery(
       'INSERT INTO stories (pet_name, author_name, title, body, image_url, is_approved, user_id) VALUES (?, ?, ?, ?, ?, 1, ?)',
       [pet_name || null, author_name || null, title, body, image_url || null, req.user.id]
     );
 
-    const story = queryOne('SELECT * FROM stories WHERE id = ?', [result.lastInsertRowid]);
+    const story = await queryOne('SELECT * FROM stories WHERE id = ?', [result.lastInsertRowid]);
     res.status(201).json({ success: true, data: story });
   } catch (err) {
     console.error('Create story error:', err);
