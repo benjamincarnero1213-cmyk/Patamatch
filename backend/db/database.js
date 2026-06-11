@@ -1,12 +1,7 @@
 require('dotenv').config();
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
-const dns = require('dns');
-
-// Fix for Supabase IPv6 host resolution in Node.js
-if (dns.setDefaultResultOrder) {
-  dns.setDefaultResultOrder('ipv6first');
-}
+// Removed dns override to prevent Vercel ENOTFOUND
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
