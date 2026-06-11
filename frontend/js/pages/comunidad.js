@@ -1,4 +1,4 @@
-import * as api from '../api.js?v=3';;
+import * as api from '../api.js?v=4';
 
 function buildCommentHTML(c) {
   const dateObj = new Date(c.created_at);

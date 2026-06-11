@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { queryAll, queryOne, runQuery } = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
+const { sanitizeHTML } = require('../middleware/sanitize');
 
 // GET /api/chats - Get all chats for the logged in user
 router.get('/', requireAuth, async (req, res) => {
@@ -87,10 +88,10 @@ router.post('/:id/messages', requireAuth, async (req, res) => {
       return res.status(403).json({ success: false, error: 'Unauthorized' });
     }
 
-    // Insert message
+    // Insert message (sanitized)
     const result = await runQuery(
       'INSERT INTO messages (chat_id, sender_id, body) VALUES (?, ?, ?)',
-      [chatId, userId, body.trim()]
+      [chatId, userId, sanitizeHTML(body.trim())]
     );
     
     const message = await queryOne(`

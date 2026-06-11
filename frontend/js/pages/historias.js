@@ -1,4 +1,4 @@
-import * as api from '../api.js?v=3';;
+import * as api from '../api.js?v=4';
 
 const extendedStories = {
   'Luna': `Después de 400 días en el refugio, Luna finalmente encontró a su familia ideal con los Miller. Su transformación de una perrita callejera tímida a una compañera juguetona es nada menos que milagrosa.

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { queryAll, queryOne, runQuery } = require('../db/database');
 const { requireAuth, optionalAuth } = require('../middleware/auth');
+const { sanitizeHTML } = require('../middleware/sanitize');
 
 // GET / — list posts with author info, like counts, optional filtering/sorting
 router.get('/', optionalAuth, async (req, res) => {
@@ -62,7 +63,7 @@ router.post('/', requireAuth, async (req, res) => {
 
     const result = await runQuery(
       'INSERT INTO posts (title, body, category, tags, user_id) VALUES (?, ?, ?, ?, ?)',
-      [title, body, category || null, tagsValue, req.user.id]
+      [sanitizeHTML(title), sanitizeHTML(body), category || null, tagsValue, req.user.id]
     );
 
     const post = await queryOne('SELECT * FROM posts WHERE id = ?', [result.lastInsertRowid]);
@@ -136,7 +137,7 @@ router.post('/:id/comments', requireAuth, async (req, res) => {
 
     const result = await runQuery(
       'INSERT INTO post_comments (post_id, user_id, body) VALUES (?, ?, ?)',
-      [postId, req.user.id, body]
+      [postId, req.user.id, sanitizeHTML(body)]
     );
 
     const comment = await queryOne(

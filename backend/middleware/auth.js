@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'patamatch-secret-key-2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'patamatch-dev-fallback-key';
 
 function requireAuth(req, res, next) {
   const authHeader = req.headers.authorization;

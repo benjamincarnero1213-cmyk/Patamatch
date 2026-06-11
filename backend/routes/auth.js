@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { queryOne, runQuery } = require('../db/database');
 const { requireAuth, JWT_SECRET } = require('../middleware/auth');
+const { sanitizeHTML } = require('../middleware/sanitize');
 
 // POST /register
 router.post('/register', async (req, res) => {
@@ -21,7 +22,7 @@ router.post('/register', async (req, res) => {
     const password_hash = bcrypt.hashSync(password, 10);
     const result = await runQuery(
       'INSERT INTO users (name, email, password_hash, city) VALUES (?, ?, ?, ?)',
-      [name, email, password_hash, city]
+      [sanitizeHTML(name), email, password_hash, sanitizeHTML(city)]
     );
 
     const user = await queryOne('SELECT id, name, email, city, created_at FROM users WHERE id = ?', [result.lastInsertRowid]);
@@ -89,7 +90,7 @@ router.put('/me', requireAuth, async (req, res) => {
 
     await runQuery(
       'UPDATE users SET name = ?, avatar_url = ? WHERE id = ?',
-      [name, avatar_url || '', req.user.id]
+      [sanitizeHTML(name), avatar_url || '', req.user.id]
     );
 
     const user = await queryOne('SELECT id, name, email, city, avatar_url, created_at FROM users WHERE id = ?', [req.user.id]);
