@@ -103,7 +103,7 @@ export async function init() {
 
         chatsListEl.innerHTML = chats.map(c => `
           <div class="chat-item p-3 rounded-xl hover:bg-orange-50 cursor-pointer transition-colors flex gap-3 items-center ${currentChatId == c.id ? 'bg-orange-50 ring-1 ring-primary/30' : ''}" data-chat-id="${c.id}">
-            <img src="${c.other_user.avatar || 'https://via.placeholder.com/150'}" onerror="this.src='https://via.placeholder.com/150'" class="w-12 h-12 rounded-full object-cover" />
+            <img src="${c.other_user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.other_user.name)}&background=FFEDD5&color=F97316`}" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(c.other_user.name)}&background=FFEDD5&color=F97316';" class="w-12 h-12 rounded-full object-cover" />
             <div class="flex-1 min-w-0">
               <div class="flex justify-between items-baseline mb-0.5">
                 <h4 class="font-semibold text-stone-800 text-sm truncate">${c.other_user.name}</h4>
@@ -142,9 +142,10 @@ export async function init() {
     activeChatEl.classList.remove('hidden');
 
     // Set header
+    const fallbackAvatar = \`https://ui-avatars.com/api/?name=\${encodeURIComponent(chat.other_user.name)}&background=FFEDD5&color=F97316\`;
     headerName.textContent = chat.other_user.name;
-    headerAvatar.src = chat.other_user.avatar || 'https://via.placeholder.com/150';
-    headerAvatar.onerror = function() { this.src = 'https://via.placeholder.com/150'; };
+    headerAvatar.src = chat.other_user.avatar || fallbackAvatar;
+    headerAvatar.onerror = function() { this.onerror = null; this.src = fallbackAvatar; };
     headerPet.textContent = `Mascota: ${chat.pet_name}`;
     
     // Highlight active in list
