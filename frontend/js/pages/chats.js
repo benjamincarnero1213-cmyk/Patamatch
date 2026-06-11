@@ -201,7 +201,7 @@ export async function init() {
     pollInterval = setInterval(() => {
       loadMessages();
       loadChats(); // refresh latest messages in sidebar
-    }, 5000);
+    }, 2000);
   }
 
   // Back button for mobile
