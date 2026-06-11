@@ -141,8 +141,7 @@ export async function init() {
     emptyState.classList.add('hidden');
     activeChatEl.classList.remove('hidden');
 
-    // Set header
-    const fallbackAvatar = \`https://ui-avatars.com/api/?name=\${encodeURIComponent(chat.other_user.name)}&background=FFEDD5&color=F97316\`;
+    const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(chat.other_user.name)}&background=FFEDD5&color=F97316`;
     headerName.textContent = chat.other_user.name;
     headerAvatar.src = chat.other_user.avatar || fallbackAvatar;
     headerAvatar.onerror = function() { this.onerror = null; this.src = fallbackAvatar; };
