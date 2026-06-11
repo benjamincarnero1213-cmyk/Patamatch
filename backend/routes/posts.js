@@ -28,7 +28,7 @@ router.get('/', optionalAuth, async (req, res) => {
       LEFT JOIN users u ON p.user_id = u.id
       LEFT JOIN post_likes pl ON pl.post_id = p.id
       ${whereClause}
-      GROUP BY p.id
+      GROUP BY p.id, u.name, u.email
       ${orderClause}
     `;
 
